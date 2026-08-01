@@ -12,19 +12,39 @@ public class PowerTool extends Equipment {
     private int voltage;
     private ToolClass toolClass;
     private boolean requiresChargeCheck;
+    private double hourlyRate;
+    private double dailyRate;
 
     public PowerTool() {
         this.rateStrategy = null;
     }
 
-    public PowerTool(String userId, String brand, String model, String serialNumber, double price, LocalDate purchaseDate,
-                     LocalDate warrantyExpiry, EquipmentCondition condition, RentalStatus status, String notes, boolean batteryPowered, int voltage,
-                     ToolClass toolClass, boolean requiresChargeCheck) {
+    public PowerTool(String userId, String brand, String model, String serialNumber, double price, LocalDate purchaseDate, LocalDate warrantyExpiry,
+                     EquipmentCondition condition, RentalStatus status, String notes, boolean batteryPowered, int voltage, ToolClass toolClass, boolean requiresChargeCheck,
+                     double hourlyRate, double dailyRate) {
         super(userId, brand, model, serialNumber, price, purchaseDate, warrantyExpiry, condition, status, notes);
         this.batteryPowered = batteryPowered;
         this.voltage = voltage;
         this.toolClass = toolClass;
         this.requiresChargeCheck = requiresChargeCheck;
+        this.hourlyRate = hourlyRate;
+        this.dailyRate = dailyRate;
+    }
+
+    public double getHourlyRate() {
+        return hourlyRate;
+    }
+
+    public void setHourlyRate(double hourlyRate) {
+        this.hourlyRate = hourlyRate;
+    }
+
+    public double getDailyRate() {
+        return dailyRate;
+    }
+
+    public void setDailyRate(double dailyRate) {
+        this.dailyRate = dailyRate;
     }
 
     public boolean isBatteryPowered() {
