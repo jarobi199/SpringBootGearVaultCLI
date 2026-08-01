@@ -1,9 +1,6 @@
 package io.gearvault.model;
 
-import io.gearvault.enums.EquipmentCondition;
-import io.gearvault.enums.EquipmentType;
-import io.gearvault.enums.EventCategory;
-import io.gearvault.enums.RentalStatus;
+import io.gearvault.enums.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,7 +18,7 @@ public class EventEquipment extends Equipment {
         this.setupLogs = new ArrayList<>();
     }
 
-    public EventEquipment(String userId, String name, String brand, String model, String serialNumber, double price, LocalDate purchaseDate, LocalDate warrantyExpiry, EquipmentCondition condition, RentalStatus status,
+    public EventEquipment(String userId, String name, String brand, String model, String serialNumber, double price, LocalDate purchaseDate, LocalDate warrantyExpiry, EquipmentCondition condition, EquipmentStatus status,
                           String notes, EventCategory eventCategory, int quantity, boolean setupRequired, double flatEventRate) {
         super(userId, name, brand, model, serialNumber, price, purchaseDate, warrantyExpiry, condition, status, notes);
         this.eventCategory = eventCategory;

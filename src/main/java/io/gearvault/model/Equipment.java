@@ -1,8 +1,8 @@
 package io.gearvault.model;
 
 import io.gearvault.enums.EquipmentCondition;
+import io.gearvault.enums.EquipmentStatus;
 import io.gearvault.enums.EquipmentType;
-import io.gearvault.enums.RentalStatus;
 import io.gearvault.interfaces.RentalRateStrategy;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -23,7 +23,7 @@ public abstract class Equipment {
     protected LocalDate purchaseDate;
     protected LocalDate warrantyExpiry;
     protected EquipmentCondition condition;
-    protected RentalStatus status;
+    protected EquipmentStatus status;
     protected String notes;
     @Transient
     protected RentalRateStrategy rateStrategy;
@@ -33,7 +33,7 @@ public abstract class Equipment {
     }
 
     public Equipment(String userId, String name, String brand, String model, String serialNumber, double price, LocalDate purchaseDate,
-                     LocalDate warrantyExpiry, EquipmentCondition condition, RentalStatus status, String notes) {
+                     LocalDate warrantyExpiry, EquipmentCondition condition, EquipmentStatus status, String notes) {
         this.userId = userId;
         this.name = name;
         this.brand = brand;
@@ -127,11 +127,11 @@ public abstract class Equipment {
         this.condition = condition;
     }
 
-    public RentalStatus getStatus() {
+    public EquipmentStatus getStatus() {
         return status;
     }
 
-    public void setStatus(RentalStatus status) {
+    public void setStatus(EquipmentStatus status) {
         this.status = status;
     }
 

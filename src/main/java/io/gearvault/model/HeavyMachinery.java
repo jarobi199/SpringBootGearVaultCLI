@@ -1,9 +1,6 @@
 package io.gearvault.model;
 
-import io.gearvault.enums.EquipmentCondition;
-import io.gearvault.enums.EquipmentType;
-import io.gearvault.enums.FuelType;
-import io.gearvault.enums.RentalStatus;
+import io.gearvault.enums.*;
 
 import java.time.LocalDate;
 
@@ -18,8 +15,8 @@ public class HeavyMachinery extends Equipment{
         this.rateStrategy = null;
     }
 
-    public HeavyMachinery(String userId,  String name, String brand, String model, String serialNumber, double price, LocalDate purchaseDate, LocalDate warrantyExpiry,
-                          EquipmentCondition condition, RentalStatus status, String notes, int engineHours,
+    public HeavyMachinery(String userId, String name, String brand, String model, String serialNumber, double price, LocalDate purchaseDate, LocalDate warrantyExpiry,
+                          EquipmentCondition condition, EquipmentStatus status, String notes, int engineHours,
                           boolean requiresOperatorCert, FuelType fuelType, double dailyRate, double deposit) {
         super(userId, name, brand, model, serialNumber, price, purchaseDate, warrantyExpiry, condition, status, notes);
         this.engineHours = engineHours;

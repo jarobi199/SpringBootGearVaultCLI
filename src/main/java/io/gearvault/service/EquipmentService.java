@@ -24,49 +24,50 @@ public class EquipmentService {
 
     public void addPowerTool(String name, String brand, String model, String serial, double purchasePrice, LocalDate purchaseDate, LocalDate warrantyExpiryDate, EquipmentCondition condition,
                              String notes, boolean isBatteryPowered, int voltage, ToolClass toolClass, boolean requiresChargeCheck, double hourlyRate, double dailyRate) {
-        PowerTool powerTool = new PowerTool(SessionContext.getUser().getId(), name, brand, model, serial, purchasePrice, purchaseDate, warrantyExpiryDate, condition, RentalStatus.ACTIVE,
+        PowerTool powerTool = new PowerTool(SessionContext.getUser().getId(), name, brand, model, serial, purchasePrice, purchaseDate, warrantyExpiryDate, condition, EquipmentStatus.AVAILABLE,
                                                                                 notes, isBatteryPowered, voltage, toolClass, requiresChargeCheck, hourlyRate, dailyRate);
         equipmentRepository.save(powerTool);
     }
 
     public void addEventEquipment( String name, String brand, String model, String serial, double purchasePrice, LocalDate purchaseDate, LocalDate warrantyExpiryDate, EquipmentCondition condition,
                                   String notes, EventCategory eventCategory, int quantity, boolean setup, double flatEventRate) {
-        EventEquipment eventEquipment = new EventEquipment(SessionContext.getUser().getId(), name, brand, model, serial, purchasePrice, purchaseDate, warrantyExpiryDate, condition, RentalStatus.ACTIVE,
+        EventEquipment eventEquipment = new EventEquipment(SessionContext.getUser().getId(), name, brand, model, serial, purchasePrice, purchaseDate, warrantyExpiryDate, condition, EquipmentStatus.AVAILABLE,
                                                                     notes, eventCategory, quantity, setup, flatEventRate);
         equipmentRepository.save(eventEquipment);
     }
 
     public void addHeavyMachinery( String name, String brand, String model, String serial, double purchasePrice, LocalDate purchaseDate, LocalDate warrantyExpiryDate, EquipmentCondition condition,
                                   String notes, int engineHours, boolean requiresCert, FuelType fuelType, double dailyRate, double deposit) {
-        HeavyMachinery heavyMachinery = new HeavyMachinery(SessionContext.getUser().getId(), name, brand, model, serial, purchasePrice, purchaseDate, warrantyExpiryDate, condition, RentalStatus.ACTIVE,
+        HeavyMachinery heavyMachinery = new HeavyMachinery(SessionContext.getUser().getId(), name, brand, model, serial, purchasePrice, purchaseDate, warrantyExpiryDate, condition, EquipmentStatus.AVAILABLE,
                                                                                             notes, engineHours, requiresCert, fuelType, dailyRate, deposit);
         equipmentRepository.save(heavyMachinery);
     }
 
-    public void listEquipment(RentalStatus rentalStatus) {
+    public void listEquipment(EquipmentStatus equipmentStatus) {
         List<Equipment> equipmentList = null;
-        if(rentalStatus == RentalStatus.ACTIVE) {
-            //Add code here
+        if(equipmentStatus != null) {
+            equipmentList = equipmentRepository.findByUserId(SessionContext.getUser().getId()).stream().filter(equipment -> equipment.getStatus().equals(equipmentStatus)).toList();
         }
         else
         {
             equipmentList = equipmentRepository.findByUserId(SessionContext.getUser().getId());
-            System.out.println("| EQUIPMENT |");
-            Table table = Clique.table(TableType.BOX_DRAW)
-                    .headers(
-                            "[*blue, bold]NAME[/]",
-                            "[*blue, bold]BRAND[/]",
-                            "[*blue, bold]MODEL[/]",
-                            "[*blue, bold]TYPE[/]",
-                            "[*blue, bold]CONDITION[/]",
-                            "[*blue, bold]STATUS[/]",
-                            "[*blue, bold]PURCHASE PRICE[/]"
-                    );
-            equipmentList.forEach(equipment -> {
-                table.row(equipment.getName(), equipment.getBrand(), equipment.getModel(), equipment.getEquipmentType().name(), equipment.getCondition().name(), equipment.getStatus().name(), InputHandler.formatAsMoney(equipment.getPrice()));
-            });
-            table.render();
         }
+
+        System.out.println("| EQUIPMENT |");
+        Table table = Clique.table(TableType.BOX_DRAW)
+                .headers(
+                        "[*blue, bold]NAME[/]",
+                        "[*blue, bold]BRAND[/]",
+                        "[*blue, bold]MODEL[/]",
+                        "[*blue, bold]TYPE[/]",
+                        "[*blue, bold]CONDITION[/]",
+                        "[*blue, bold]STATUS[/]",
+                        "[*blue, bold]PURCHASE PRICE[/]"
+                );
+        equipmentList.forEach(equipment -> {
+            table.row(equipment.getName(), equipment.getBrand(), equipment.getModel(), equipment.getEquipmentType().name(), equipment.getCondition().name(), equipment.getStatus().name(), InputHandler.formatAsMoney(equipment.getPrice()));
+        });
+        table.render();
     }
 
 }

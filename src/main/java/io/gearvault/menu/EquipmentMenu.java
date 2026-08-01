@@ -23,10 +23,15 @@ public class EquipmentMenu implements IMenu {
             choice = InputHandler.getIntegerInput();
             switch (choice) {
                 case 1 -> listAllEquipment();
+                case 2 -> listAllAvailableEquipment();
                 case 3 -> addEquipment();
             }
         }
         while (choice != 0);
+    }
+
+    public void listAllAvailableEquipment() {
+        equipmentService.listEquipment(EquipmentStatus.AVAILABLE);
     }
 
     public void addEquipment() {
@@ -101,7 +106,7 @@ public class EquipmentMenu implements IMenu {
     }
 
     public void listAllEquipment() {
-        equipmentService.listEquipment(RentalStatus.ACTIVE);
+        equipmentService.listEquipment(null);
     }
 
     @Override
