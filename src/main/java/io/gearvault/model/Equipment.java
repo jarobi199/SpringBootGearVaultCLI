@@ -10,11 +10,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 
-@Document(collection = "users")
+@Document(collection = "equipment")
 public abstract class Equipment {
     @Id
     protected String id;
     protected String userId;
+    protected String name;
     protected String brand;
     protected String model;
     protected String serialNumber;
@@ -31,9 +32,10 @@ public abstract class Equipment {
         //No argument constructor
     }
 
-    public Equipment(String userId, String brand, String model, String serialNumber, double price, LocalDate purchaseDate,
+    public Equipment(String userId, String name, String brand, String model, String serialNumber, double price, LocalDate purchaseDate,
                      LocalDate warrantyExpiry, EquipmentCondition condition, RentalStatus status, String notes) {
         this.userId = userId;
+        this.name = name;
         this.brand = brand;
         this.model = model;
         this.serialNumber = serialNumber;
@@ -59,6 +61,14 @@ public abstract class Equipment {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getBrand() {

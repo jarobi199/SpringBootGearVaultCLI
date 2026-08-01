@@ -19,10 +19,10 @@ public class PowerTool extends Equipment {
         this.rateStrategy = null;
     }
 
-    public PowerTool(String userId, String brand, String model, String serialNumber, double price, LocalDate purchaseDate, LocalDate warrantyExpiry,
+    public PowerTool(String userId, String name, String brand, String model, String serialNumber, double price, LocalDate purchaseDate, LocalDate warrantyExpiry,
                      EquipmentCondition condition, RentalStatus status, String notes, boolean batteryPowered, int voltage, ToolClass toolClass, boolean requiresChargeCheck,
                      double hourlyRate, double dailyRate) {
-        super(userId, brand, model, serialNumber, price, purchaseDate, warrantyExpiry, condition, status, notes);
+        super(userId, name, brand, model, serialNumber, price, purchaseDate, warrantyExpiry, condition, status, notes);
         this.batteryPowered = batteryPowered;
         this.voltage = voltage;
         this.toolClass = toolClass;

@@ -6,6 +6,7 @@ import io.gearvault.enums.EventCategory;
 import io.gearvault.enums.RentalStatus;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EventEquipment extends Equipment {
@@ -17,17 +18,16 @@ public class EventEquipment extends Equipment {
 
     public EventEquipment() {
         this.rateStrategy = null;
+        this.setupLogs = new ArrayList<>();
     }
 
-    public EventEquipment(String userId, String brand, String model, String serialNumber, double price, LocalDate purchaseDate, LocalDate warrantyExpiry, EquipmentCondition condition, RentalStatus status,
-                          String notes, EventCategory eventCategory, int quantity, boolean setupRequired,
-                          double flatEventRate, List<BookingNote> setupLogs) {
-        super(userId, brand, model, serialNumber, price, purchaseDate, warrantyExpiry, condition, status, notes);
+    public EventEquipment(String userId, String name, String brand, String model, String serialNumber, double price, LocalDate purchaseDate, LocalDate warrantyExpiry, EquipmentCondition condition, RentalStatus status,
+                          String notes, EventCategory eventCategory, int quantity, boolean setupRequired, double flatEventRate) {
+        super(userId, name, brand, model, serialNumber, price, purchaseDate, warrantyExpiry, condition, status, notes);
         this.eventCategory = eventCategory;
         this.quantity = quantity;
         this.setupRequired = setupRequired;
         this.flatEventRate = flatEventRate;
-        this.setupLogs = setupLogs;
     }
 
     public EventCategory getEventCategory() {

@@ -1,0 +1,72 @@
+package io.gearvault.service;
+
+import io.gearvault.authentication.SessionContext;
+import io.gearvault.enums.*;
+import io.gearvault.model.Equipment;
+import io.gearvault.model.EventEquipment;
+import io.gearvault.model.HeavyMachinery;
+import io.gearvault.model.PowerTool;
+import io.gearvault.repository.EquipmentRepository;
+import io.gearvault.util.InputHandler;
+import io.github.kusoroadeolu.clique.Clique;
+import io.github.kusoroadeolu.clique.components.Table;
+import io.github.kusoroadeolu.clique.configuration.TableType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Service
+public class EquipmentService {
+    @Autowired
+    private EquipmentRepository equipmentRepository;
+
+    public void addPowerTool(String name, String brand, String model, String serial, double purchasePrice, LocalDate purchaseDate, LocalDate warrantyExpiryDate, EquipmentCondition condition,
+                             String notes, boolean isBatteryPowered, int voltage, ToolClass toolClass, boolean requiresChargeCheck, double hourlyRate, double dailyRate) {
+        PowerTool powerTool = new PowerTool(SessionContext.getUser().getId(), name, brand, model, serial, purchasePrice, purchaseDate, warrantyExpiryDate, condition, RentalStatus.ACTIVE,
+                                                                                notes, isBatteryPowered, voltage, toolClass, requiresChargeCheck, hourlyRate, dailyRate);
+        equipmentRepository.save(powerTool);
+    }
+
+    public void addEventEquipment( String name, String brand, String model, String serial, double purchasePrice, LocalDate purchaseDate, LocalDate warrantyExpiryDate, EquipmentCondition condition,
+                                  String notes, EventCategory eventCategory, int quantity, boolean setup, double flatEventRate) {
+        EventEquipment eventEquipment = new EventEquipment(SessionContext.getUser().getId(), name, brand, model, serial, purchasePrice, purchaseDate, warrantyExpiryDate, condition, RentalStatus.ACTIVE,
+                                                                    notes, eventCategory, quantity, setup, flatEventRate);
+        equipmentRepository.save(eventEquipment);
+    }
+
+    public void addHeavyMachinery( String name, String brand, String model, String serial, double purchasePrice, LocalDate purchaseDate, LocalDate warrantyExpiryDate, EquipmentCondition condition,
+                                  String notes, int engineHours, boolean requiresCert, FuelType fuelType, double dailyRate, double deposit) {
+        HeavyMachinery heavyMachinery = new HeavyMachinery(SessionContext.getUser().getId(), name, brand, model, serial, purchasePrice, purchaseDate, warrantyExpiryDate, condition, RentalStatus.ACTIVE,
+                                                                                            notes, engineHours, requiresCert, fuelType, dailyRate, deposit);
+        equipmentRepository.save(heavyMachinery);
+    }
+
+    public void listEquipment(RentalStatus rentalStatus) {
+        List<Equipment> equipmentList = null;
+        if(rentalStatus == RentalStatus.ACTIVE) {
+            //Add code here
+        }
+        else
+        {
+            equipmentList = equipmentRepository.findByUserId(SessionContext.getUser().getId());
+            System.out.println("| EQUIPMENT |");
+            Table table = Clique.table(TableType.BOX_DRAW)
+                    .headers(
+                            "[*blue, bold]NAME[/]",
+                            "[*blue, bold]BRAND[/]",
+                            "[*blue, bold]MODEL[/]",
+                            "[*blue, bold]TYPE[/]",
+                            "[*blue, bold]CONDITION[/]",
+                            "[*blue, bold]STATUS[/]",
+                            "[*blue, bold]PURCHASE PRICE[/]"
+                    );
+            equipmentList.forEach(equipment -> {
+                table.row(equipment.getName(), equipment.getBrand(), equipment.getModel(), equipment.getEquipmentType().name(), equipment.getCondition().name(), equipment.getStatus().name(), InputHandler.formatAsMoney(equipment.getPrice()));
+            });
+            table.render();
+        }
+    }
+
+}

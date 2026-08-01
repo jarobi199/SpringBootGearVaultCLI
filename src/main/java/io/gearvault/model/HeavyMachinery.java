@@ -18,10 +18,10 @@ public class HeavyMachinery extends Equipment{
         this.rateStrategy = null;
     }
 
-    public HeavyMachinery(String userId, String brand, String model, String serialNumber, double price, LocalDate purchaseDate, LocalDate warrantyExpiry,
+    public HeavyMachinery(String userId,  String name, String brand, String model, String serialNumber, double price, LocalDate purchaseDate, LocalDate warrantyExpiry,
                           EquipmentCondition condition, RentalStatus status, String notes, int engineHours,
                           boolean requiresOperatorCert, FuelType fuelType, double dailyRate, double deposit) {
-        super(userId, brand, model, serialNumber, price, purchaseDate, warrantyExpiry, condition, status, notes);
+        super(userId, name, brand, model, serialNumber, price, purchaseDate, warrantyExpiry, condition, status, notes);
         this.engineHours = engineHours;
         this.requiresOperatorCert = requiresOperatorCert;
         this.fuelType = fuelType;

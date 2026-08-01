@@ -13,6 +13,8 @@ public class MainMenu implements IMenu {
     @Autowired
     private SettingsMenu settingsMenu;
     @Autowired
+    private EquipmentMenu equipmentMenu;
+    @Autowired
     private GoodbyeMenu goodbyeMenu;
 
     public void show() {
@@ -28,6 +30,7 @@ public class MainMenu implements IMenu {
             printOptions();
             choice = InputHandler.getIntegerInput();
             menu = switch (choice) {
+                case 1 -> equipmentMenu;
                 case 6 -> settingsMenu;
                 case 0 -> goodbyeMenu;
                default -> throw new IllegalStateException("Unexpected value: " + choice);
