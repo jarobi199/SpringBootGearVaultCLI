@@ -92,5 +92,7 @@ public class EquipmentService {
 
     public void viewEquipmentDetails(Equipment equipment) {
         System.out.println(equipment.getSummary());
+        //TODO: Add maintenance records
+        //TODO: Add rental history
     }
 }
