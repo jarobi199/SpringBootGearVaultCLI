@@ -95,4 +95,35 @@ public class EquipmentService {
         //TODO: Add maintenance records
         //TODO: Add rental history
     }
+
+    public void editPowerTool(PowerTool powerTool, EquipmentCondition condition, String notes, LocalDate warrantyExpiryDate, int voltage, double hourlyRate, double dailyRate) {
+        powerTool.setCondition(condition);
+        powerTool.setNotes(notes);
+        powerTool.setWarrantyExpiry(warrantyExpiryDate);
+        powerTool.setVoltage(voltage);
+        powerTool.setHourlyRate(hourlyRate);
+        powerTool.setDailyRate(dailyRate);
+
+        equipmentRepository.save(powerTool);
+    }
+
+
+    public void editHeavyMachinery(HeavyMachinery heavyMachinery, EquipmentCondition condition, String notes,  LocalDate warrantyExpiryDate, double dailyRate, double deposit) {
+        heavyMachinery.setCondition(condition);
+        heavyMachinery.setNotes(notes);
+        heavyMachinery.setWarrantyExpiry(warrantyExpiryDate);
+        heavyMachinery.setDailyRate(dailyRate);
+        heavyMachinery.setDeposit(deposit);
+
+        equipmentRepository.save(heavyMachinery);
+    }
+
+    public void editEventEquipment(EventEquipment eventEquipment, EquipmentCondition condition, String notes, LocalDate warrantyExpiryDate, double flatEventRate) {
+        eventEquipment.setCondition(condition);
+        eventEquipment.setNotes(notes);
+        eventEquipment.setWarrantyExpiry(warrantyExpiryDate);
+        eventEquipment.setFlatEventRate(flatEventRate);
+
+        equipmentRepository.save(eventEquipment);
+    }
 }

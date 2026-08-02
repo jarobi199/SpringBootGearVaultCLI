@@ -4,6 +4,8 @@ import io.gearvault.enums.*;
 import io.gearvault.interfaces.IMenu;
 import io.gearvault.model.Equipment;
 import io.gearvault.model.EventEquipment;
+import io.gearvault.model.HeavyMachinery;
+import io.gearvault.model.PowerTool;
 import io.gearvault.service.EquipmentService;
 import io.gearvault.util.InputHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +30,57 @@ public class EquipmentMenu implements IMenu {
                 case 1 -> listAllEquipment();
                 case 2 -> listAllAvailableEquipment();
                 case 4 -> viewEquipmentDetail();
+                case 5 -> editEquipmentDetails();
                 case 3 -> addEquipment();
                 case 6 -> addBookingNote();
                 case 7 -> retireEquipment();
             }
         }
         while (choice != 0);
+    }
+
+    public void editEquipmentDetails() {
+        Equipment equipment = listEquipmentAndSelect(null);
+
+        System.out.println("Enter the new condition (EXCELLENT, GOOD, FAIR, POOR, NEEDS_REPAIR):");
+        EquipmentCondition condition = EquipmentCondition.valueOf(InputHandler.getStringInput().toUpperCase());
+        System.out.println("Enter the new notes:");
+        String notes = InputHandler.getStringInput();
+        System.out.println("Enter the new warranty expiry date (yyyy-MM-dd):");
+        LocalDate warrantyExpiryDate = InputHandler.getDateInput();
+
+        switch (equipment.getEquipmentType()) {
+            case POWER_TOOL -> {
+                PowerTool powerTool = (PowerTool) equipment;
+                System.out.println("Enter the new voltage:");
+                int voltage = InputHandler.getIntegerInput();
+                System.out.println("Enter the new hourly rate:");
+                double hourlyRate = InputHandler.getDoubleInput();
+                System.out.println("Enter the new daily rate:");
+                double dailyRate = InputHandler.getDoubleInput();
+
+                equipmentService.editPowerTool(powerTool, condition, notes, warrantyExpiryDate, voltage, hourlyRate, dailyRate);
+            }
+            case HEAVY_MACHINERY -> {
+                HeavyMachinery heavyMachinery = (HeavyMachinery) equipment;
+                System.out.println("Enter the new daily rate:");
+                double dailyRate = InputHandler.getDoubleInput();
+                System.out.println("Enter the new deposit:");
+                double deposit = InputHandler.getDoubleInput();
+
+                equipmentService.editHeavyMachinery(heavyMachinery, condition, notes, warrantyExpiryDate, dailyRate, deposit);
+            }
+            case EVENT_EQUIPMENT -> {
+                EventEquipment eventEquipment = (EventEquipment) equipment;
+
+                System.out.println("Enter the new flat event rate:");
+                double flatEventRate = InputHandler.getDoubleInput();
+
+                equipmentService.editEventEquipment(eventEquipment, condition, notes, warrantyExpiryDate, flatEventRate);
+            }
+        }
+
+        System.out.println("Equipment has been updated!");
     }
 
     public void viewEquipmentDetail() {
