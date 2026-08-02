@@ -10,6 +10,7 @@ import java.time.LocalDate;
 public class MaintenanceLog {
     @Id
     private String id;
+    private String equipmentId;
     private LocalDate serviceDate;
     private ServiceType serviceType;
     private String description;
@@ -21,8 +22,7 @@ public class MaintenanceLog {
         //No argument constructor
     }
 
-    public MaintenanceLog(String id, LocalDate serviceDate, ServiceType serviceType, String description, double cost, int hoursAtService, String technicianName) {
-        this.id = id;
+    public MaintenanceLog(LocalDate serviceDate, ServiceType serviceType, String description, double cost, int hoursAtService, String technicianName) {
         this.serviceDate = serviceDate;
         this.serviceType = serviceType;
         this.description = description;
@@ -37,6 +37,14 @@ public class MaintenanceLog {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getEquipmentId() {
+        return equipmentId;
+    }
+
+    public void setEquipmentId(String equipmentId) {
+        this.equipmentId = equipmentId;
     }
 
     public LocalDate getServiceDate() {
