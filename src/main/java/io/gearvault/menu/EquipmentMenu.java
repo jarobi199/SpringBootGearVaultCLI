@@ -2,12 +2,15 @@ package io.gearvault.menu;
 
 import io.gearvault.enums.*;
 import io.gearvault.interfaces.IMenu;
+import io.gearvault.model.Equipment;
+import io.gearvault.model.EventEquipment;
 import io.gearvault.service.EquipmentService;
 import io.gearvault.util.InputHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Component
 public class EquipmentMenu implements IMenu {
@@ -25,9 +28,37 @@ public class EquipmentMenu implements IMenu {
                 case 1 -> listAllEquipment();
                 case 2 -> listAllAvailableEquipment();
                 case 3 -> addEquipment();
+                case 6 -> addBookingNote();
+                case 7 -> retireEquipment();
             }
         }
         while (choice != 0);
+    }
+
+    public void retireEquipment() {
+        Equipment equipment = listEquipmentAndSelect(null);
+        System.out.println("Are you sure that you want to retire this equipment? (Y/N)?:");
+        boolean answer = InputHandler.getBooleanInput();
+        if(answer) {
+            equipmentService.retireEquipment(equipment);
+        }
+    }
+
+    public void addBookingNote() {
+        EventEquipment eventEquipment = (EventEquipment) listEquipmentAndSelect(EquipmentType.EVENT_EQUIPMENT);
+        if(eventEquipment != null) {
+            System.out.println("Enter the event date (yyyy-MM-dd):");
+            LocalDate eventDate = InputHandler.getDateInput();
+            System.out.println("Enter the setup details:");
+            String setupDetails = InputHandler.getStringInput();
+            System.out.println("Enter the headcount:");
+            int headcount = InputHandler.getIntegerInput();
+            System.out.println("Enter the notes:");
+            String notes = InputHandler.getStringInput();
+
+            equipmentService.addBookingNote(eventEquipment, eventDate, setupDetails, headcount, notes);
+            System.out.println("The booking note has been added successfully!");
+        }
     }
 
     public void listAllAvailableEquipment() {
@@ -107,6 +138,37 @@ public class EquipmentMenu implements IMenu {
 
     public void listAllEquipment() {
         equipmentService.listEquipment(null);
+    }
+
+    public Equipment listEquipmentAndSelect(EquipmentType equipmentType) {
+        int number = 1;
+        Equipment equipment = null;
+        int choice = 0;
+        List<Equipment> equipmentList = null;
+
+        if(equipmentType != null) {
+            equipmentList = equipmentService.findAllEquipment().stream().filter(e -> e.getEquipmentType().equals(equipmentType)).toList();
+        }
+        else
+        {
+            equipmentList = equipmentService.findAllEquipment();
+        }
+
+        if (!equipmentList.isEmpty()) {
+            for (Equipment e : equipmentList) {
+                System.out.println("[" + number + "] " +  e.getBrand() + " " + e.getName());
+                number++;
+            }
+            System.out.println("Select equipment:");
+            choice = InputHandler.getIntegerInput();
+            equipment = equipmentList.get(choice - 1);
+        }
+        else
+        {
+            System.out.println("There is no equipment available.");
+        }
+
+        return equipment;
     }
 
     @Override

@@ -2,10 +2,7 @@ package io.gearvault.service;
 
 import io.gearvault.authentication.SessionContext;
 import io.gearvault.enums.*;
-import io.gearvault.model.Equipment;
-import io.gearvault.model.EventEquipment;
-import io.gearvault.model.HeavyMachinery;
-import io.gearvault.model.PowerTool;
+import io.gearvault.model.*;
 import io.gearvault.repository.EquipmentRepository;
 import io.gearvault.util.InputHandler;
 import io.github.kusoroadeolu.clique.Clique;
@@ -21,6 +18,10 @@ import java.util.List;
 public class EquipmentService {
     @Autowired
     private EquipmentRepository equipmentRepository;
+
+    public List<Equipment> findAllEquipment() {
+        return equipmentRepository.findByUserId(SessionContext.getUser().getId());
+    }
 
     public void addPowerTool(String name, String brand, String model, String serial, double purchasePrice, LocalDate purchaseDate, LocalDate warrantyExpiryDate, EquipmentCondition condition,
                              String notes, boolean isBatteryPowered, int voltage, ToolClass toolClass, boolean requiresChargeCheck, double hourlyRate, double dailyRate) {
@@ -46,7 +47,7 @@ public class EquipmentService {
     public void listEquipment(EquipmentStatus equipmentStatus) {
         List<Equipment> equipmentList = null;
         if(equipmentStatus != null) {
-            equipmentList = equipmentRepository.findByUserId(SessionContext.getUser().getId()).stream().filter(equipment -> equipment.getStatus().equals(equipmentStatus)).toList();
+            equipmentList = equipmentRepository.findByUserIdAndStatus(SessionContext.getUser().getId(), equipmentStatus);
         }
         else
         {
@@ -70,4 +71,22 @@ public class EquipmentService {
         table.render();
     }
 
+    public void addBookingNote(EventEquipment eventEquipment, LocalDate eventDate, String setupDetails, int headcount, String notes) {
+        BookingNote bookingNote = new BookingNote(eventDate, setupDetails, headcount, notes);
+        eventEquipment.getSetupLogs().add(bookingNote);
+
+        equipmentRepository.save(eventEquipment);
+    }
+
+    public void retireEquipment(Equipment equipment) {
+        if(EquipmentStatus.RENTED.equals(equipment.getStatus())) {
+            System.out.println("You cannot retire this piece of equipment. It is rented!");
+        }
+        else
+        {
+            equipment.setStatus(EquipmentStatus.RETIRED);
+            equipmentRepository.save(equipment);
+            System.out.println("Equipment has been retired!");
+        }
+    }
 }
