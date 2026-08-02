@@ -1,6 +1,7 @@
 package io.gearvault.model;
 
 import io.gearvault.enums.*;
+import io.gearvault.util.InputHandler;
 
 import java.time.LocalDate;
 
@@ -83,6 +84,26 @@ public class HeavyMachinery extends Equipment{
         }
 
         return certWarning;
+    }
+
+    @Override
+    public String getSummary() {
+        return "| HEAVY MACHINERY - DETAILS |" +  "\n" +
+                "Name: " + name + "\n" +
+                "Brand: " + brand + "\n" +
+                "Model: " + model + "\n" +
+                "SerialNumber: " + serialNumber + "\n" +
+                "Price: " +  InputHandler.formatAsMoney(price) + "\n" +
+                "Purchase Date: " + purchaseDate + "\n" +
+                "Warranty Expiry Date: " + warrantyExpiry + "\n" +
+                "Condition: " + condition + "\n" +
+                "Status: " + status.name() + "\n" +
+                "Notes: " + notes + "\n" +
+                "Engine Hours: " + engineHours + "\n" +
+                "Requires Operator Certification: " + requiresOperatorCert + "\n" +
+                "Fuel Type: " + fuelType.name() + "\n" +
+                "Deposit: "  +  InputHandler.formatAsMoney(deposit) + "\n" +
+                "Daily Rate: " +  InputHandler.formatAsMoney(dailyRate);
     }
 
 }

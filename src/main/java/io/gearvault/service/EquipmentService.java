@@ -89,4 +89,8 @@ public class EquipmentService {
             System.out.println("Equipment has been retired!");
         }
     }
+
+    public void viewEquipmentDetails(Equipment equipment) {
+        System.out.println(equipment.getSummary());
+    }
 }

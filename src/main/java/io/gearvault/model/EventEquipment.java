@@ -76,4 +76,24 @@ public class EventEquipment extends Equipment {
     public EquipmentType getEquipmentType() {
         return EquipmentType.EVENT_EQUIPMENT;
     }
+
+    @Override
+    public String getSummary() {
+        return "| EVENT EQUIPMENT - DETAILS |" +
+                "Name: '" + name + "\n" +
+                "Brand: '" + brand + "\n" +
+                "Model: '" + model + "\n" +
+                "SerialNumber: '" + serialNumber + "\n" +
+                "Price: " + price + "\n" +
+                "Purchase Date: " + purchaseDate + "\n" +
+                "Warranty Expiry Date: " + warrantyExpiry + "\n" +
+                "Condition: " + condition + "\n" +
+                "Status: " + status.name() + "\n" +
+                "Notes: '" + notes + "\n" +
+                "Event Category: " + eventCategory.name() + "\n" +
+                "Quantity: " + quantity + "\n" +
+                "Setup Required: " + setupRequired + "\n" +
+                "Flat Event Rate: $" + flatEventRate;
+    }
+
 }

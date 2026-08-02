@@ -1,6 +1,7 @@
 package io.gearvault.model;
 
 import io.gearvault.enums.*;
+import io.gearvault.util.InputHandler;
 
 import java.time.LocalDate;
 
@@ -85,4 +86,25 @@ public class PowerTool extends Equipment {
     public EquipmentType getEquipmentType() {
         return EquipmentType.POWER_TOOL;
     }
+
+    @Override
+    public String getSummary() {
+        return "| POWER TOOL - DETAILS |" +  "\n" +
+                "Name: " + name + "\n" +
+                "Brand: " + brand + "\n" +
+                "Model: " + model + "\n" +
+                "SerialNumber: " + serialNumber + "\n" +
+                "Price: " +  InputHandler.formatAsMoney(price) + "\n" +
+                "Purchase Date: " + purchaseDate + "\n" +
+                "Warranty Expiry Date: " + warrantyExpiry + "\n" +
+                "Condition: " + condition + "\n" +
+                "Status: " + status.name() + "\n" +
+                "Notes: " + notes + "\n" +
+                "Voltage: " + voltage + "\n" +
+                "Tool Class: " + toolClass.name() + "\n" +
+                "Requires Charge Check: " + requiresChargeCheck + "\n" +
+                "Hourly Rate: " + InputHandler.formatAsMoney(hourlyRate) + "\n" +
+                "Daily Rate: " +  InputHandler.formatAsMoney(dailyRate);
+    }
+
 }

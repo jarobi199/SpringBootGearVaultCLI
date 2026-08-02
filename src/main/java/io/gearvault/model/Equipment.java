@@ -147,5 +147,7 @@ public abstract class Equipment {
 
     public abstract EquipmentType getEquipmentType();
 
+    public abstract String getSummary();
+
 }
 

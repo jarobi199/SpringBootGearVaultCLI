@@ -27,12 +27,18 @@ public class EquipmentMenu implements IMenu {
             switch (choice) {
                 case 1 -> listAllEquipment();
                 case 2 -> listAllAvailableEquipment();
+                case 4 -> viewEquipmentDetail();
                 case 3 -> addEquipment();
                 case 6 -> addBookingNote();
                 case 7 -> retireEquipment();
             }
         }
         while (choice != 0);
+    }
+
+    public void viewEquipmentDetail() {
+        Equipment equipment = listEquipmentAndSelect(null);
+        equipmentService.viewEquipmentDetails(equipment);
     }
 
     public void retireEquipment() {
