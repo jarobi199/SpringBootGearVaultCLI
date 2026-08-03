@@ -1,7 +1,6 @@
 package io.gearvault.menu;
 
 import io.gearvault.interfaces.IMenu;
-import io.gearvault.service.MaintenanceLogService;
 import io.gearvault.util.InputHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +16,8 @@ public class MainMenu implements IMenu {
     private EquipmentMenu equipmentMenu;
     @Autowired
     private MaintenanceMenu maintenanceMenu;
+    @Autowired
+    private RentalsMenu rentalsMenu;
     @Autowired
     private GoodbyeMenu goodbyeMenu;
 
@@ -34,6 +35,7 @@ public class MainMenu implements IMenu {
             choice = InputHandler.getIntegerInput();
             menu = switch (choice) {
                 case 1 -> equipmentMenu;
+                case 2 -> rentalsMenu;
                 case 3 -> maintenanceMenu;
                 case 6 -> settingsMenu;
                 case 0 -> goodbyeMenu;
