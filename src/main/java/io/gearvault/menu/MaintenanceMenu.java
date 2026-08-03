@@ -26,9 +26,15 @@ public class MaintenanceMenu implements IMenu {
             choice = InputHandler.getIntegerInput();
             switch (choice) {
                 case 1 -> logMaintenanceRecord();
+                case 2 -> viewHistoryByEquipment();
             }
         }
         while (choice != 0);
+    }
+
+    public void viewHistoryByEquipment() {
+        Equipment equipment = equipmentMenu.listEquipmentAndSelect(null);
+        maintenanceLogService.viewHistory(equipment);
     }
 
     public void logMaintenanceRecord() {

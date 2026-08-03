@@ -22,7 +22,8 @@ public class MaintenanceLog {
         //No argument constructor
     }
 
-    public MaintenanceLog(LocalDate serviceDate, ServiceType serviceType, String description, double cost, int hoursAtService, String technicianName) {
+    public MaintenanceLog(String equipmentId, LocalDate serviceDate, ServiceType serviceType, String description, double cost, int hoursAtService, String technicianName) {
+        this.equipmentId = equipmentId;
         this.serviceDate = serviceDate;
         this.serviceType = serviceType;
         this.description = description;
