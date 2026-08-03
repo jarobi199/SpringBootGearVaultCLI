@@ -1,5 +1,6 @@
 package io.gearvault.service;
 
+import io.gearvault.authentication.SessionContext;
 import io.gearvault.enums.EquipmentStatus;
 import io.gearvault.enums.ServiceType;
 import io.gearvault.model.Equipment;
@@ -14,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MaintenanceLogService {
@@ -59,6 +63,39 @@ public class MaintenanceLogService {
     public void deleteMaintenanceLog(MaintenanceLog maintenanceLog) {
         maintenanceLogRepository.delete(maintenanceLog);
     }
+
+    public void viewAllMaintenanceRecords() {
+        List<Equipment> equipmentList = equipmentRepository.findByUserId(SessionContext.getUser().getId());
+        Map<Equipment, List<MaintenanceLog>> maintenanceLogMap = new HashMap<>();
+
+        for (Equipment equipment : equipmentList) {
+            List<MaintenanceLog> maintenanceLogList = maintenanceLogRepository.findByEquipmentIdOrderByServiceDateDesc(equipment.getId());
+            maintenanceLogMap.put(equipment, maintenanceLogList);
+        }
+
+        if(!maintenanceLogMap.isEmpty()){
+            System.out.println("| ALL MAINTENANCE LOGS |");
+            Table table = Clique.table(TableType.BOX_DRAW)
+                    .headers(
+                            "[*blue, bold]DATE[/]",
+                            "[*blue, bold]EQUIPMENT NAME[/]",
+                            "[*blue, bold]EQUIPMENT SERIAL NUMBER[/]",
+                            "[*blue, bold]EQUIPMENT BRAND[/]",
+                            "[*blue, bold]EQUIPMENT MODEL[/]",
+                            "[*blue, bold]SERVICE TYPE[/]",
+                            "[*blue, bold]DESCRIPTION[/]",
+                            "[*blue, bold]COST[/]",
+                            "[*blue, bold]HOURS AT SERVICE[/]",
+                            "[*blue, bold]TECHNICIAN[/]"
+                    );
+            for(Map.Entry<Equipment, List<MaintenanceLog>> entry : maintenanceLogMap.entrySet()) {
+                for(MaintenanceLog maintenanceLog : entry.getValue()) {
+                    table.row(maintenanceLog.getServiceDate().toString(), entry.getKey().getName(), entry.getKey().getSerialNumber(), entry.getKey().getBrand(), entry.getKey().getModel(),
+                            maintenanceLog.getDescription(), InputHandler.formatAsMoney(maintenanceLog.getCost()), String.valueOf(maintenanceLog.getHoursAtService()), maintenanceLog.getTechnicianName());
+                }
+            }
+            table.render();
+        }
+    }
+
 }
-
-

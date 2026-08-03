@@ -29,10 +29,15 @@ public class MaintenanceMenu implements IMenu {
             switch (choice) {
                 case 1 -> logMaintenanceRecord();
                 case 2 -> viewHistoryByEquipment();
+                case 3 -> viewAllMaintenanceRecords();
                 case 4 -> deleteMaintenanceRecord();
             }
         }
         while (choice != 0);
+    }
+
+    private void viewAllMaintenanceRecords() {
+        maintenanceLogService.viewAllMaintenanceRecords();
     }
 
     public void deleteMaintenanceRecord() {
