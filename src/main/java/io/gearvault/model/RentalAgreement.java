@@ -26,7 +26,7 @@ public class RentalAgreement {
     }
 
     public RentalAgreement(String userId, String equipmentId, String customerName, String customerPhone, LocalDate checkOutDate,
-                           LocalDate dueDate, LocalDate returnDate, double deposit, RentalStatus status) {
+                           LocalDate dueDate, LocalDate returnDate, double deposit, RentalStatus status, double totalCost) {
         this.userId = userId;
         this.equipmentId = equipmentId;
         this.customerName = customerName;
@@ -36,6 +36,7 @@ public class RentalAgreement {
         this.returnDate = returnDate;
         this.deposit = deposit;
         this.status = status;
+        this.totalCost = totalCost;
     }
 
     public String getId() {

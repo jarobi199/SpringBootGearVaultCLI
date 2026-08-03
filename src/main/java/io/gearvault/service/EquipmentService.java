@@ -20,6 +20,8 @@ public class EquipmentService {
     private EquipmentRepository equipmentRepository;
     @Autowired
     private MaintenanceLogService maintenanceLogService;
+    @Autowired
+    private RentalAgreementService rentalAgreementService;
 
     public List<Equipment> findAllEquipment() {
         return equipmentRepository.findByUserId(SessionContext.getUser().getId());
@@ -96,7 +98,7 @@ public class EquipmentService {
         System.out.println(equipment.getSummary());
         System.out.println();
         maintenanceLogService.viewHistory(equipment);
-        //TODO: Add rental history
+        rentalAgreementService.viewRentalHistory(equipment); //TODO: Add rental history
     }
 
     public void editPowerTool(PowerTool powerTool, EquipmentCondition condition, String notes, LocalDate warrantyExpiryDate, int voltage, double hourlyRate, double dailyRate) {

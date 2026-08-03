@@ -1,15 +1,21 @@
 package io.gearvault.menu;
 
 import io.gearvault.interfaces.IMenu;
+import io.gearvault.model.Equipment;
+import io.gearvault.model.HeavyMachinery;
 import io.gearvault.service.RentalAgreementService;
 import io.gearvault.util.InputHandler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 public class RentalsMenu implements IMenu {
 
+    @Autowired
+    private EquipmentMenu equipmentMenu;
     @Autowired
     private RentalAgreementService rentalAgreementService;
 
@@ -27,7 +33,25 @@ public class RentalsMenu implements IMenu {
     }
 
     public void checkOutEquipment() {
+        Equipment equipment = equipmentMenu.listEquipmentAndSelect(null);
+        boolean answer = true;
 
+        if((equipment instanceof HeavyMachinery heavyMachinery) && heavyMachinery.isRequiresOperatorCert()) {
+            System.out.println(heavyMachinery.getCertWarning());
+            System.out.println("Do you have the required credentials to proceed (Y/N)?:");
+            answer = InputHandler.getBooleanInput();
+        }
+
+        if(answer) {
+            System.out.println("Please enter the customer name:");
+            String name = InputHandler.getStringInput();
+            System.out.println("Please enter the customer phone:");
+            String phone = InputHandler.getStringInput();
+            System.out.println("Enter the due date (yyyy-MM-dd):");
+            LocalDate dueDate = InputHandler.getDateInput();
+
+            rentalAgreementService.checkOutEquipment(equipment, name, phone, dueDate);
+        }
     }
 
     @Override
