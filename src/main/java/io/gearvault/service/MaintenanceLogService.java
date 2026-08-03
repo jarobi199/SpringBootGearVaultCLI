@@ -51,6 +51,14 @@ public class MaintenanceLogService {
         table.render();
         System.out.println("TOTAL MAINTENANCE COST: " + InputHandler.formatAsMoney(totalCost) );
     }
+
+    public List<MaintenanceLog> findMaintenanceLogsByEquipmentId(Equipment equipment) {
+        return maintenanceLogRepository.findByEquipmentId(equipment.getId());
+    }
+
+    public void deleteMaintenanceLog(MaintenanceLog maintenanceLog) {
+        maintenanceLogRepository.delete(maintenanceLog);
+    }
 }
 
 

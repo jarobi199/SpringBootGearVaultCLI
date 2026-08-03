@@ -3,12 +3,14 @@ package io.gearvault.menu;
 import io.gearvault.enums.ServiceType;
 import io.gearvault.interfaces.IMenu;
 import io.gearvault.model.Equipment;
+import io.gearvault.model.MaintenanceLog;
 import io.gearvault.service.MaintenanceLogService;
 import io.gearvault.util.InputHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Component
 public class MaintenanceMenu implements IMenu {
@@ -27,9 +29,23 @@ public class MaintenanceMenu implements IMenu {
             switch (choice) {
                 case 1 -> logMaintenanceRecord();
                 case 2 -> viewHistoryByEquipment();
+                case 4 -> deleteMaintenanceRecord();
             }
         }
         while (choice != 0);
+    }
+
+    public void deleteMaintenanceRecord() {
+        Equipment equipment = equipmentMenu.listEquipmentAndSelect(null);
+        if (equipment != null) {
+            MaintenanceLog maintenanceLog = listMaintenanceLogsAndSelect(equipment);
+            System.out.println("Are you sure that you want to delete this maintenance log? (Y/N)?:");
+            boolean answer = InputHandler.getBooleanInput();
+            if(answer) {
+                maintenanceLogService.deleteMaintenanceLog(maintenanceLog);
+                System.out.println("Maintenance log has been successfully deleted!");
+            }
+        }
     }
 
     public void viewHistoryByEquipment() {
@@ -55,6 +71,29 @@ public class MaintenanceMenu implements IMenu {
         String name = InputHandler.getStringInput();
 
         maintenanceLogService.addMaintenanceLog(equipment, serviceDate, serviceType, description, cost, hours, name);
+    }
+
+    public MaintenanceLog listMaintenanceLogsAndSelect(Equipment equipment) {
+        int number = 1;
+        MaintenanceLog maintenanceLog = null;
+        int choice = 0;
+
+        List<MaintenanceLog> maintenanceLogList = maintenanceLogService.findMaintenanceLogsByEquipmentId(equipment);
+        if (!maintenanceLogList.isEmpty()) {
+            for (MaintenanceLog m : maintenanceLogList) {
+                System.out.println("[" + number + "] " +  " " + m.getServiceDate().toString() + " - " + m.getServiceType().name() + " - " +  m.getDescription());
+                number++;
+            }
+            System.out.println("Select a maintenance log:");
+            choice = InputHandler.getIntegerInput();
+            maintenanceLog = maintenanceLogList.get(choice - 1);
+        }
+        else
+        {
+            System.out.println("There are no maintenance logs.");
+        }
+
+        return maintenanceLog;
     }
 
     @Override
