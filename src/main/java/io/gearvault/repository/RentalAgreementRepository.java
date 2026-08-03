@@ -10,5 +10,6 @@ import java.util.List;
 @Repository
 public interface RentalAgreementRepository extends MongoRepository<RentalAgreement, String> {
     List<RentalAgreement> findByEquipmentId(String equipmentId);
+    List<RentalAgreement> findByUserIdAndStatus(String userId, RentalStatus status);
 }
 

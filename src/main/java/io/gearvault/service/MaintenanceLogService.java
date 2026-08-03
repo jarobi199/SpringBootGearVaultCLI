@@ -27,7 +27,7 @@ public class MaintenanceLogService {
     private EquipmentRepository equipmentRepository;
 
     public void addMaintenanceLog(Equipment equipment, LocalDate serviceDate, ServiceType serviceType, String description, double cost, int hours, String name) {
-        MaintenanceLog maintenanceLog = new MaintenanceLog(equipment.getId(), serviceDate, serviceType, description, cost, hours, name);
+        MaintenanceLog maintenanceLog = new MaintenanceLog(SessionContext.getUser().getId(), equipment.getId(), serviceDate, serviceType, description, cost, hours, name);
         maintenanceLogRepository.save(maintenanceLog);
 
         equipment.setStatus(EquipmentStatus.IN_MAINTENANCE);
@@ -89,7 +89,7 @@ public class MaintenanceLogService {
                     );
             for(Map.Entry<Equipment, List<MaintenanceLog>> entry : maintenanceLogMap.entrySet()) {
                 for(MaintenanceLog maintenanceLog : entry.getValue()) {
-                    table.row(maintenanceLog.getServiceDate().toString(), entry.getKey().getName(), entry.getKey().getSerialNumber(), entry.getKey().getBrand(), entry.getKey().getModel(),
+                    table.row(maintenanceLog.getServiceDate().toString(), entry.getKey().getName(), entry.getKey().getSerialNumber(), entry.getKey().getBrand(), entry.getKey().getModel(), maintenanceLog.getServiceType().name(),
                             maintenanceLog.getDescription(), InputHandler.formatAsMoney(maintenanceLog.getCost()), String.valueOf(maintenanceLog.getHoursAtService()), maintenanceLog.getTechnicianName());
                 }
             }

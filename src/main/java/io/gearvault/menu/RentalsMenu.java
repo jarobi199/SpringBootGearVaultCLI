@@ -1,7 +1,9 @@
 package io.gearvault.menu;
 
 import io.gearvault.interfaces.IMenu;
+import io.gearvault.service.RentalAgreementService;
 import io.gearvault.util.InputHandler;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class RentalsMenu implements IMenu {
 
     @Autowired
-    private EquipmentMenu equipmentMenu;
+    private RentalAgreementService rentalAgreementService;
 
     @Override
     public void show() {

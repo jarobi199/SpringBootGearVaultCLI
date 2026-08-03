@@ -10,4 +10,5 @@ import java.util.List;
 public interface MaintenanceLogRepository extends MongoRepository<MaintenanceLog, String> {
     List<MaintenanceLog> findByEquipmentId (String equipmentId );
     List<MaintenanceLog> findByEquipmentIdOrderByServiceDateDesc(String equipmentId);
+    List<MaintenanceLog>  findByUserIdOrderByServiceDateDesc(String userId);
 }

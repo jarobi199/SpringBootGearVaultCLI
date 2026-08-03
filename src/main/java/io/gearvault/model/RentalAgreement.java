@@ -10,6 +10,7 @@ import java.time.LocalDate;
 public class RentalAgreement {
     @Id
     private String id;
+    private String userId;
     private String equipmentId;
     private String customerName;
     private String customerPhone;
@@ -24,8 +25,9 @@ public class RentalAgreement {
         //No argument constructor
     }
 
-    public RentalAgreement(String equipmentId, String customerName, String customerPhone, LocalDate checkOutDate,
+    public RentalAgreement(String userId, String equipmentId, String customerName, String customerPhone, LocalDate checkOutDate,
                            LocalDate dueDate, LocalDate returnDate, double deposit, RentalStatus status) {
+        this.userId = userId;
         this.equipmentId = equipmentId;
         this.customerName = customerName;
         this.customerPhone = customerPhone;
@@ -50,6 +52,14 @@ public class RentalAgreement {
 
     public void setEquipmentId(String equipmentId) {
         this.equipmentId = equipmentId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getCustomerName() {
