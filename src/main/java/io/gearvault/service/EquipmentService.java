@@ -18,6 +18,8 @@ import java.util.List;
 public class EquipmentService {
     @Autowired
     private EquipmentRepository equipmentRepository;
+    @Autowired
+    private MaintenanceLogService maintenanceLogService;
 
     public List<Equipment> findAllEquipment() {
         return equipmentRepository.findByUserId(SessionContext.getUser().getId());
@@ -92,7 +94,8 @@ public class EquipmentService {
 
     public void viewEquipmentDetails(Equipment equipment) {
         System.out.println(equipment.getSummary());
-        //TODO: Add maintenance records
+        System.out.println();
+        maintenanceLogService.viewHistory(equipment);
         //TODO: Add rental history
     }
 
