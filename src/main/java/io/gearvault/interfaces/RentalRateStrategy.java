@@ -1,4 +1,7 @@
 package io.gearvault.interfaces;
 
-public interface RentalRateStrategy {
+import io.gearvault.model.Equipment;
+
+public interface RentalRateStrategy<T extends Equipment> {
+    double computeCost(T equipment, int days);
 }

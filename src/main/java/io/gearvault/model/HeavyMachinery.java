@@ -1,7 +1,10 @@
 package io.gearvault.model;
 
 import io.gearvault.enums.*;
+import io.gearvault.interfaces.RentalRateStrategy;
+import io.gearvault.pricing.TieredDailyRateStrategy;
 import io.gearvault.util.InputHandler;
+import org.springframework.data.annotation.Transient;
 
 import java.time.LocalDate;
 
@@ -11,9 +14,11 @@ public class HeavyMachinery extends Equipment{
     private FuelType fuelType;
     private double dailyRate;
     private double deposit;
+    @Transient
+    private RentalRateStrategy<HeavyMachinery> rateStrategy;
 
     public HeavyMachinery() {
-        this.rateStrategy = null;
+        this.rateStrategy = new TieredDailyRateStrategy();
     }
 
     public HeavyMachinery(String userId, String name, String brand, String model, String serialNumber, double price, LocalDate purchaseDate, LocalDate warrantyExpiry,
@@ -69,7 +74,7 @@ public class HeavyMachinery extends Equipment{
 
     @Override
     public double computeRentalCost(int days) {
-        return 0;
+        return rateStrategy.computeCost(this, days);
     }
 
     @Override

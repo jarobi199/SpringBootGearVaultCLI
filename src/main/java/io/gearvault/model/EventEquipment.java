@@ -1,6 +1,9 @@
 package io.gearvault.model;
 
 import io.gearvault.enums.*;
+import io.gearvault.interfaces.RentalRateStrategy;
+import io.gearvault.pricing.FlatEventRateStrategy;
+import org.springframework.data.annotation.Transient;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,10 +15,12 @@ public class EventEquipment extends Equipment {
     private boolean setupRequired;
     private double flatEventRate;
     private List<BookingNote> setupLogs;
+    @Transient
+    private RentalRateStrategy<EventEquipment> rateStrategy;
 
     public EventEquipment() {
-        this.rateStrategy = null;
         this.setupLogs = new ArrayList<>();
+        this.rateStrategy = new FlatEventRateStrategy();
     }
 
     public EventEquipment(String userId, String name, String brand, String model, String serialNumber, double price, LocalDate purchaseDate, LocalDate warrantyExpiry, EquipmentCondition condition, EquipmentStatus status,
@@ -69,7 +74,7 @@ public class EventEquipment extends Equipment {
 
     @Override
     public double computeRentalCost(int days) {
-        return 0;
+        return rateStrategy.computeCost(this, days);
     }
 
     @Override

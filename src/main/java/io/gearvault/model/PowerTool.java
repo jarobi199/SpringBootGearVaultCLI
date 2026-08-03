@@ -1,7 +1,10 @@
 package io.gearvault.model;
 
 import io.gearvault.enums.*;
+import io.gearvault.interfaces.RentalRateStrategy;
+import io.gearvault.pricing.HourlyCappedRateStrategy;
 import io.gearvault.util.InputHandler;
+import org.springframework.data.annotation.Transient;
 
 import java.time.LocalDate;
 
@@ -12,9 +15,11 @@ public class PowerTool extends Equipment {
     private boolean requiresChargeCheck;
     private double hourlyRate;
     private double dailyRate;
+    @Transient
+    private RentalRateStrategy<PowerTool> rateStrategy;
 
     public PowerTool() {
-        this.rateStrategy = null;
+        this.rateStrategy = new HourlyCappedRateStrategy();
     }
 
     public PowerTool(String userId, String name, String brand, String model, String serialNumber, double price, LocalDate purchaseDate, LocalDate warrantyExpiry,
@@ -79,7 +84,7 @@ public class PowerTool extends Equipment {
 
     @Override
     public double computeRentalCost(int days) {
-        return 0;
+        return rateStrategy.computeCost(this,days);
     }
 
     @Override

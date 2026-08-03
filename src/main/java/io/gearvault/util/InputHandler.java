@@ -20,6 +20,7 @@ public class InputHandler {
     private static final Scanner consoleScanner = new Scanner(System.in);
     private static BufferedReader debugReader = null;
     private static int stepCounter = 0;
+    private static DecimalFormat df = new DecimalFormat("0.00");
 
     static {
         if (DEBUG) {
@@ -128,7 +129,6 @@ public class InputHandler {
     }
 
     public static String formatAsMoney(double value) {
-        DecimalFormat df = new DecimalFormat("0.00");
         return "$" + df.format(value);
     }
 

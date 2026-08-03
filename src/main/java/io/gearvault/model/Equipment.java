@@ -3,9 +3,7 @@ package io.gearvault.model;
 import io.gearvault.enums.EquipmentCondition;
 import io.gearvault.enums.EquipmentStatus;
 import io.gearvault.enums.EquipmentType;
-import io.gearvault.interfaces.RentalRateStrategy;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
@@ -25,8 +23,6 @@ public abstract class Equipment {
     protected EquipmentCondition condition;
     protected EquipmentStatus status;
     protected String notes;
-    @Transient
-    protected RentalRateStrategy rateStrategy;
 
     public Equipment() {
         //No argument constructor
