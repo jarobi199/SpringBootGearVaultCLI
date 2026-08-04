@@ -15,9 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class MaintenanceLogService {
@@ -64,15 +62,9 @@ public class MaintenanceLogService {
     }
 
     public void viewAllMaintenanceRecords() {
-        List<Equipment> equipmentList = equipmentRepository.findByUserId(SessionContext.getUser().getId());
-        Map<Equipment, List<MaintenanceLog>> maintenanceLogMap = new HashMap<>();
+        List<MaintenanceLog> maintenanceLogList = maintenanceLogRepository.findByUserIdOrderByServiceDateDesc(SessionContext.getUser().getId());
 
-        for (Equipment equipment : equipmentList) {
-            List<MaintenanceLog> maintenanceLogList = maintenanceLogRepository.findByEquipmentIdOrderByServiceDateDesc(equipment.getId());
-            maintenanceLogMap.put(equipment, maintenanceLogList);
-        }
-
-        if(!maintenanceLogMap.isEmpty()){
+        if(!maintenanceLogList.isEmpty()){
             System.out.println("| ALL MAINTENANCE LOGS |");
             Table table = Clique.table(TableType.BOX_DRAW)
                     .headers(
@@ -87,11 +79,10 @@ public class MaintenanceLogService {
                             "[*blue, bold]HOURS AT SERVICE[/]",
                             "[*blue, bold]TECHNICIAN[/]"
                     );
-            for(Map.Entry<Equipment, List<MaintenanceLog>> entry : maintenanceLogMap.entrySet()) {
-                for(MaintenanceLog maintenanceLog : entry.getValue()) {
-                    table.row(maintenanceLog.getServiceDate().toString(), entry.getKey().getName(), entry.getKey().getSerialNumber(), entry.getKey().getBrand(), entry.getKey().getModel(), maintenanceLog.getServiceType().name(),
-                            maintenanceLog.getDescription(), InputHandler.formatAsMoney(maintenanceLog.getCost()), String.valueOf(maintenanceLog.getHoursAtService()), maintenanceLog.getTechnicianName());
-                }
+            for(MaintenanceLog maintenanceLog : maintenanceLogList) {
+                Equipment equipment = equipmentRepository.findById(maintenanceLog.getEquipmentId()).get();
+                table.row(maintenanceLog.getServiceDate().toString(), equipment.getName(), equipment.getSerialNumber(), equipment.getBrand(), equipment.getModel(), maintenanceLog.getServiceType().name(),
+                        maintenanceLog.getDescription(), InputHandler.formatAsMoney(maintenanceLog.getCost()), String.valueOf(maintenanceLog.getHoursAtService()), maintenanceLog.getTechnicianName());
             }
             table.render();
         }
