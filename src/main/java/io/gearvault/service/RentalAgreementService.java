@@ -5,6 +5,7 @@ import io.gearvault.enums.EquipmentCondition;
 import io.gearvault.enums.EquipmentStatus;
 import io.gearvault.enums.EquipmentType;
 import io.gearvault.enums.RentalStatus;
+import io.gearvault.interfaces.AlertStrategy;
 import io.gearvault.model.Equipment;
 import io.gearvault.model.HeavyMachinery;
 import io.gearvault.model.RentalAgreement;
@@ -34,8 +35,8 @@ public class RentalAgreementService {
         double depositAmount = EquipmentType.HEAVY_MACHINERY.equals(equipment.getEquipmentType()) ? ((HeavyMachinery) equipment).getDeposit() : 0.0;
         long days = ChronoUnit.DAYS.between(LocalDate.now(), dueDate);
         equipment.setStatus(EquipmentStatus.RENTED);
-        RentalAgreement  rentalAgreement = new RentalAgreement(SessionContext.getUser().getId(), equipment.getId(), name, phone, equipment.getName(), equipment.getSerialNumber(),
-                                                                                equipment.getBrand(), equipment.getModel(), LocalDate.now(), dueDate, null, depositAmount, RentalStatus.ACTIVE, days);
+        RentalAgreement  rentalAgreement = new RentalAgreement(SessionContext.getUser().getId(), equipment.getId(), equipment.getName(), equipment.getSerialNumber(),
+                equipment.getBrand(), equipment.getModel(), name, phone, LocalDate.now(), dueDate, null, depositAmount, RentalStatus.ACTIVE, days);
 
         rentalAgreementRepository.save(rentalAgreement);
         equipmentRepository.save(equipment);
@@ -50,6 +51,10 @@ public class RentalAgreementService {
     private void displayRentals(List<RentalAgreement> rentalAgreements ) {
         Table table = Clique.table(TableType.BOX_DRAW)
                 .headers(
+                        "[*blue, bold]EQUIPMENT NAME[/]",
+                        "[*blue, bold]EQUIPMENT SERIAL NUMBER[/]",
+                        "[*blue, bold]EQUIPMENT BRAND[/]",
+                        "[*blue, bold]EQUIPMENT MODEL[/]",
                         "[*blue, bold]CUSTOMER NAME[/]",
                         "[*blue, bold]CUSTOMER PHONE[/]",
                         "[*blue, bold]CHECK OUT DATE[/]",
@@ -60,8 +65,10 @@ public class RentalAgreementService {
                         "[*blue, bold]TOTAL COST[/]"
                 );
         rentalAgreements.forEach(rentalAgreement -> {
-            table.row(rentalAgreement.getCustomerName(), rentalAgreement.getCustomerPhone(), rentalAgreement.getCheckOutDate().toString(), rentalAgreement.getDueDate().toString(),
-                    (rentalAgreement.getReturnDate() != null) ? rentalAgreement.getReturnDate().toString() : "N/A", InputHandler.formatAsMoney(rentalAgreement.getDeposit()), rentalAgreement.getStatus().name(), InputHandler.formatAsMoney(rentalAgreement.getTotalCost()));
+            table.row(rentalAgreement.getEquipmentName(), rentalAgreement.getEquipmentSerialNumber(), rentalAgreement.getEquipmentBrand(), rentalAgreement.getEquipmentModel(), rentalAgreement.getCustomerName(),
+                    rentalAgreement.getCustomerPhone(), rentalAgreement.getCheckOutDate().toString(), rentalAgreement.getDueDate().toString(),
+                    (rentalAgreement.getReturnDate() != null) ? rentalAgreement.getReturnDate().toString() : "N/A", InputHandler.formatAsMoney(rentalAgreement.getDeposit()),
+                    rentalAgreement.getStatus().name(), InputHandler.formatAsMoney(rentalAgreement.getTotalCost()));
         });
         table.render();
     }
@@ -89,8 +96,13 @@ public class RentalAgreementService {
 
         if (rentalAgreement.getReturnDate().isAfter(rentalAgreement.getDueDate())) {
             long lateDays = ChronoUnit.DAYS.between(rentalAgreement.getDueDate(), rentalAgreement.getReturnDate());
-            System.out.println("This equipment was " + lateDays + " overdue!");
+            System.out.println(AlertStrategy.ANSI_YELLOW + "This equipment was " + lateDays + " overdue!" + AlertStrategy.ANSI_RESET);
         }
     }
 
+    public void viewRentalHistory() {
+        List<RentalAgreement> rentalAgreements =  rentalAgreementRepository.findByUserId(SessionContext.getUser().getId());
+        System.out.println("| USER RENTAL HISTORY |");
+        displayRentals(rentalAgreements);
+    }
 }

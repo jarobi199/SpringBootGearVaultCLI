@@ -33,9 +33,14 @@ public class RentalsMenu implements IMenu {
                 case 1 -> checkOutEquipment();
                 case 2 -> checkInEquipment();
                 case 3 -> viewActiveRentals();
+                case 5 -> viewRentalHistory();
             }
         }
         while (choice != 0);
+    }
+
+    public void viewRentalHistory() {
+        rentalAgreementService.viewRentalHistory();
     }
 
     public void checkInEquipment() {
