@@ -98,7 +98,7 @@ public class EquipmentService {
         System.out.println(equipment.getSummary());
         System.out.println();
         maintenanceLogService.viewHistory(equipment);
-        rentalAgreementService.viewRentalHistory(equipment); //TODO: Add rental history
+        rentalAgreementService.viewRentalHistory(equipment);
     }
 
     public void editPowerTool(PowerTool powerTool, EquipmentCondition condition, String notes, LocalDate warrantyExpiryDate, int voltage, double hourlyRate, double dailyRate) {

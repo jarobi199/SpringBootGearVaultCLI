@@ -42,6 +42,7 @@ public class RentalAgreementService {
     public void viewRentalHistory(Equipment equipment) {
         List<RentalAgreement> rentalAgreements =  rentalAgreementRepository.findByEquipmentId(equipment.getId());
         System.out.println("| RENTAL HISTORY |");
+        displayRentals(rentalAgreements);
     }
 
     private void displayRentals(List<RentalAgreement> rentalAgreements ) {
