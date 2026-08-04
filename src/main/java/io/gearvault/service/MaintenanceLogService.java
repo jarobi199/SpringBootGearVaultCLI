@@ -25,7 +25,8 @@ public class MaintenanceLogService {
     private EquipmentRepository equipmentRepository;
 
     public void addMaintenanceLog(Equipment equipment, LocalDate serviceDate, ServiceType serviceType, String description, double cost, int hours, String name) {
-        MaintenanceLog maintenanceLog = new MaintenanceLog(SessionContext.getUser().getId(), equipment.getId(), serviceDate, serviceType, description, cost, hours, name);
+        MaintenanceLog maintenanceLog = new MaintenanceLog(SessionContext.getUser().getId(), equipment.getId(),  equipment.getName(), equipment.getSerialNumber(),
+                                                    equipment.getBrand(), equipment.getModel(), serviceDate, serviceType, description, cost, hours, name);
         maintenanceLogRepository.save(maintenanceLog);
 
         equipment.setStatus(EquipmentStatus.IN_MAINTENANCE);
@@ -80,8 +81,7 @@ public class MaintenanceLogService {
                             "[*blue, bold]TECHNICIAN[/]"
                     );
             for(MaintenanceLog maintenanceLog : maintenanceLogList) {
-                Equipment equipment = equipmentRepository.findById(maintenanceLog.getEquipmentId()).get();
-                table.row(maintenanceLog.getServiceDate().toString(), equipment.getName(), equipment.getSerialNumber(), equipment.getBrand(), equipment.getModel(), maintenanceLog.getServiceType().name(),
+                table.row(maintenanceLog.getServiceDate().toString(), maintenanceLog.getEquipmentName(), maintenanceLog.getEquipmentSerialNumber(), maintenanceLog.getEquipmentBrand(), maintenanceLog.getEquipmentModel(), maintenanceLog.getServiceType().name(),
                         maintenanceLog.getDescription(), InputHandler.formatAsMoney(maintenanceLog.getCost()), String.valueOf(maintenanceLog.getHoursAtService()), maintenanceLog.getTechnicianName());
             }
             table.render();

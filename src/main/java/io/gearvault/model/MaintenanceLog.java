@@ -12,6 +12,10 @@ public class MaintenanceLog {
     private String id;
     private String userId;
     private String equipmentId;
+    private String equipmentName;
+    private String equipmentSerialNumber;
+    private String equipmentBrand;
+    private String equipmentModel;
     private LocalDate serviceDate;
     private ServiceType serviceType;
     private String description;
@@ -23,9 +27,14 @@ public class MaintenanceLog {
         //No argument constructor
     }
 
-    public MaintenanceLog(String userId, String equipmentId, LocalDate serviceDate, ServiceType serviceType, String description, double cost, int hoursAtService, String technicianName) {
+    public MaintenanceLog(String userId, String equipmentId, String equipmentName, String equipmentSerialNumber, String equipmentBrand, String equipmentModel,
+                          LocalDate serviceDate, ServiceType serviceType, String description, double cost, int hoursAtService, String technicianName) {
         this.userId = userId;
         this.equipmentId = equipmentId;
+        this.equipmentName = equipmentName;
+        this.equipmentSerialNumber = equipmentSerialNumber;
+        this.equipmentBrand = equipmentBrand;
+        this.equipmentModel = equipmentModel;
         this.serviceDate = serviceDate;
         this.serviceType = serviceType;
         this.description = description;
@@ -48,6 +57,38 @@ public class MaintenanceLog {
 
     public void setEquipmentId(String equipmentId) {
         this.equipmentId = equipmentId;
+    }
+
+    public String getEquipmentName() {
+        return equipmentName;
+    }
+
+    public void setEquipmentName(String equipmentName) {
+        this.equipmentName = equipmentName;
+    }
+
+    public String getEquipmentSerialNumber() {
+        return equipmentSerialNumber;
+    }
+
+    public void setEquipmentSerialNumber(String equipmentSerialNumber) {
+        this.equipmentSerialNumber = equipmentSerialNumber;
+    }
+
+    public String getEquipmentBrand() {
+        return equipmentBrand;
+    }
+
+    public void setEquipmentBrand(String equipmentBrand) {
+        this.equipmentBrand = equipmentBrand;
+    }
+
+    public String getEquipmentModel() {
+        return equipmentModel;
+    }
+
+    public void setEquipmentModel(String equipmentModel) {
+        this.equipmentModel = equipmentModel;
     }
 
     public String getUserId() {

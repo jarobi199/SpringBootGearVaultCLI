@@ -1,6 +1,7 @@
 package io.gearvault.service;
 
 import io.gearvault.authentication.SessionContext;
+import io.gearvault.enums.EquipmentCondition;
 import io.gearvault.enums.EquipmentStatus;
 import io.gearvault.enums.EquipmentType;
 import io.gearvault.enums.RentalStatus;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RentalAgreementService {
@@ -32,8 +34,8 @@ public class RentalAgreementService {
         double depositAmount = EquipmentType.HEAVY_MACHINERY.equals(equipment.getEquipmentType()) ? ((HeavyMachinery) equipment).getDeposit() : 0.0;
         long days = ChronoUnit.DAYS.between(LocalDate.now(), dueDate);
         equipment.setStatus(EquipmentStatus.RENTED);
-        RentalAgreement  rentalAgreement = new RentalAgreement(SessionContext.getUser().getId(), equipment.getId(), name, phone,
-                                                                                                            LocalDate.now(), dueDate, null, depositAmount, RentalStatus.ACTIVE, days);
+        RentalAgreement  rentalAgreement = new RentalAgreement(SessionContext.getUser().getId(), equipment.getId(), name, phone, equipment.getName(), equipment.getSerialNumber(),
+                                                                                equipment.getBrand(), equipment.getModel(), LocalDate.now(), dueDate, null, depositAmount, RentalStatus.ACTIVE, days);
 
         rentalAgreementRepository.save(rentalAgreement);
         equipmentRepository.save(equipment);
@@ -67,6 +69,28 @@ public class RentalAgreementService {
     public void viewActiveRentals() {
         List<RentalAgreement> rentalAgreements =  rentalAgreementRepository.findByUserIdAndStatus(SessionContext.getUser().getId(), RentalStatus.ACTIVE);
         displayRentals(rentalAgreements);
+    }
+
+    public List<RentalAgreement> findAllRentalsByStatus(RentalStatus rentalStatus) {
+        return rentalAgreementRepository.findByUserIdAndStatus(SessionContext.getUser().getId(), rentalStatus);
+    }
+
+    public void checkInEquipment(RentalAgreement rentalAgreement, EquipmentCondition equipmentCondition) {
+        Optional<Equipment> optionalEquipment = equipmentRepository.findById(rentalAgreement.getEquipmentId());
+        optionalEquipment.ifPresent(equipment -> {
+            rentalAgreement.setReturnDate(LocalDate.now());
+            rentalAgreement.setStatus(RentalStatus.RETURNED);
+            equipment.setStatus(EquipmentStatus.AVAILABLE);
+            equipment.setCondition(equipmentCondition);
+
+            equipmentRepository.save(equipment);
+            rentalAgreementRepository.save(rentalAgreement);
+        });
+
+        if (rentalAgreement.getReturnDate().isAfter(rentalAgreement.getDueDate())) {
+            long lateDays = ChronoUnit.DAYS.between(rentalAgreement.getDueDate(), rentalAgreement.getReturnDate());
+            System.out.println("This equipment was " + lateDays + " overdue!");
+        }
     }
 
 }
