@@ -1,6 +1,7 @@
 package io.gearvault.model;
 
 import io.gearvault.enums.*;
+import io.gearvault.interfaces.AlertStrategy;
 import io.gearvault.interfaces.RentalRateStrategy;
 import io.gearvault.pricing.TieredDailyRateStrategy;
 import io.gearvault.util.InputHandler;
@@ -85,7 +86,7 @@ public class HeavyMachinery extends Equipment{
     public String getCertWarning() {
         String certWarning = null;
         if (requiresOperatorCert) {
-            certWarning = "⚠ Operator certification required for " + brand + " " + model + ". Verify customer credentials before checkout.";
+            certWarning = AlertStrategy.ANSI_YELLOW +  "⚠ Operator certification required for " + brand + " " + model + ". Verify customer credentials before checkout." + AlertStrategy.ANSI_RESET;
         }
 
         return certWarning;

@@ -27,9 +27,14 @@ public class RentalsMenu implements IMenu {
             choice = InputHandler.getIntegerInput();
             switch (choice) {
                 case 1 -> checkOutEquipment();
+                case 3 -> viewActiveRentals();
             }
         }
         while (choice != 0);
+    }
+
+    public void viewActiveRentals() {
+        rentalAgreementService.viewActiveRentals();
     }
 
     public void checkOutEquipment() {

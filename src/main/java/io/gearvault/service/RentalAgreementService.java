@@ -1,7 +1,13 @@
 package io.gearvault.service;
 
+import io.gearvault.authentication.SessionContext;
+import io.gearvault.enums.EquipmentStatus;
+import io.gearvault.enums.EquipmentType;
+import io.gearvault.enums.RentalStatus;
 import io.gearvault.model.Equipment;
+import io.gearvault.model.HeavyMachinery;
 import io.gearvault.model.RentalAgreement;
+import io.gearvault.repository.EquipmentRepository;
 import io.gearvault.repository.RentalAgreementRepository;
 import io.gearvault.util.InputHandler;
 import io.github.kusoroadeolu.clique.Clique;
@@ -11,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -18,9 +25,18 @@ public class RentalAgreementService {
 
     @Autowired
     private RentalAgreementRepository rentalAgreementRepository;
+    @Autowired
+    private EquipmentRepository equipmentRepository;
 
     public void checkOutEquipment(Equipment equipment, String name, String phone, LocalDate dueDate) {
-        //TODO: add checkout equipment code here
+        double depositAmount = EquipmentType.HEAVY_MACHINERY.equals(equipment.getEquipmentType()) ? ((HeavyMachinery) equipment).getDeposit() : 0.0;
+        long days = ChronoUnit.DAYS.between(LocalDate.now(), dueDate);
+        equipment.setStatus(EquipmentStatus.RENTED);
+        RentalAgreement  rentalAgreement = new RentalAgreement(SessionContext.getUser().getId(), equipment.getId(), name, phone,
+                                                                                                            LocalDate.now(), dueDate, null, depositAmount, RentalStatus.ACTIVE, days);
+
+        rentalAgreementRepository.save(rentalAgreement);
+        equipmentRepository.save(equipment);
     }
 
     public void viewRentalHistory(Equipment equipment) {
@@ -42,8 +58,14 @@ public class RentalAgreementService {
                 );
         rentalAgreements.forEach(rentalAgreement -> {
             table.row(rentalAgreement.getCustomerName(), rentalAgreement.getCustomerPhone(), rentalAgreement.getCheckOutDate().toString(), rentalAgreement.getDueDate().toString(),
-                    rentalAgreement.getReturnDate().toString(), InputHandler.formatAsMoney(rentalAgreement.getDeposit()), rentalAgreement.getStatus().name(), InputHandler.formatAsMoney(rentalAgreement.getTotalCost()));
+                    (rentalAgreement.getReturnDate() != null) ? rentalAgreement.getReturnDate().toString() : "N/A", InputHandler.formatAsMoney(rentalAgreement.getDeposit()), rentalAgreement.getStatus().name(), InputHandler.formatAsMoney(rentalAgreement.getTotalCost()));
         });
         table.render();
     }
+
+    public void viewActiveRentals() {
+        List<RentalAgreement> rentalAgreements =  rentalAgreementRepository.findByUserIdAndStatus(SessionContext.getUser().getId(), RentalStatus.ACTIVE);
+        displayRentals(rentalAgreements);
+    }
+
 }
