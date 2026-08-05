@@ -69,6 +69,7 @@ public class EquipmentMenu implements IMenu {
                 double deposit = InputHandler.getDoubleInput();
 
                 equipmentService.editHeavyMachinery(heavyMachinery, condition, notes, warrantyExpiryDate, dailyRate, deposit);
+
             }
             case EVENT_EQUIPMENT -> {
                 EventEquipment eventEquipment = (EventEquipment) equipment;
