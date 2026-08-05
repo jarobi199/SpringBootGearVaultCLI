@@ -105,4 +105,8 @@ public class RentalAgreementService {
         System.out.println("| USER RENTAL HISTORY |");
         displayRentals(rentalAgreements);
     }
+
+    public void viewOverdueRentals() {
+        //TODO: Add code here
+    }
 }
