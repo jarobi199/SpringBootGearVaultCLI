@@ -2,10 +2,7 @@ package io.gearvault.menu;
 
 import io.gearvault.enums.*;
 import io.gearvault.interfaces.IMenu;
-import io.gearvault.model.Equipment;
-import io.gearvault.model.EventEquipment;
-import io.gearvault.model.HeavyMachinery;
-import io.gearvault.model.PowerTool;
+import io.gearvault.model.*;
 import io.gearvault.service.EquipmentService;
 import io.gearvault.util.InputHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +30,35 @@ public class EquipmentMenu implements IMenu {
                 case 5 -> editEquipmentDetails();
                 case 3 -> addEquipment();
                 case 6 -> addBookingNote();
-                case 7 -> retireEquipment();
+                case 7 -> editBookingNote();
+                case 8 -> retireEquipment();
             }
         }
         while (choice != 0);
+    }
+
+    public void editBookingNote() {
+        System.out.println("NOTE: Booking notes can only be edited on event equipment.");
+        EventEquipment eventEquipment = (EventEquipment) listEquipmentAndSelect(EquipmentType.EVENT_EQUIPMENT);
+        if((eventEquipment != null) && (!eventEquipment.getSetupLogs().isEmpty())) {
+            BookingNote bookingNote = listBookingNotesAndSelect(eventEquipment.getSetupLogs());
+            System.out.println("Enter the new event date (yyyy-MM-dd):");
+            LocalDate eventDate = InputHandler.getDateInput();
+            System.out.println("Enter the new setup details:");
+            String setupDetails = InputHandler.getStringInput();
+            System.out.println("Enter the new headcount:");
+            int headcount = InputHandler.getIntegerInput();
+            System.out.println("Enter the new notes:");
+            String notes = InputHandler.getStringInput();
+
+            equipmentService.editBookingNote(eventEquipment, bookingNote, eventDate, setupDetails, headcount, notes);
+            System.out.println("The booking note has been edited successfully!");
+        }
+        else
+        {
+            System.out.println("There are no booking notes to edit.");
+        }
+
     }
 
     public void editEquipmentDetails() {
@@ -73,7 +95,6 @@ public class EquipmentMenu implements IMenu {
             }
             case EVENT_EQUIPMENT -> {
                 EventEquipment eventEquipment = (EventEquipment) equipment;
-
                 System.out.println("Enter the new flat event rate:");
                 double flatEventRate = InputHandler.getDoubleInput();
 
@@ -99,6 +120,7 @@ public class EquipmentMenu implements IMenu {
     }
 
     public void addBookingNote() {
+        System.out.println("NOTE: Booking notes can only be added to event equipment.");
         EventEquipment eventEquipment = (EventEquipment) listEquipmentAndSelect(EquipmentType.EVENT_EQUIPMENT);
         if(eventEquipment != null) {
             System.out.println("Enter the event date (yyyy-MM-dd):");
@@ -225,6 +247,23 @@ public class EquipmentMenu implements IMenu {
         return equipment;
     }
 
+    private BookingNote listBookingNotesAndSelect(List<BookingNote> setupLogs) {
+        int number = 1;
+        BookingNote bookingNote = null;
+        int choice = 0;
+
+        for (BookingNote b : setupLogs) {
+                System.out.println("[" + number + "] " +  b.eventDate().toString() + " - " + b.setupDetails());
+                number++;
+        }
+
+        System.out.println("Select a booking note:");
+        choice = InputHandler.getIntegerInput();
+        bookingNote = setupLogs.get(choice - 1);
+
+        return bookingNote;
+    }
+
     @Override
     public void printOptions() {
         System.out.println();
@@ -234,7 +273,8 @@ public class EquipmentMenu implements IMenu {
         System.out.println("[4] View equipment details");
         System.out.println("[5] Edit equipment");
         System.out.println("[6] Add booking note");
-        System.out.println("[7] Retire equipment");
+        System.out.println("[6] Edit booking note");
+        System.out.println("[8] Retire equipment");
         System.out.println("[0] Back");
     }
 }

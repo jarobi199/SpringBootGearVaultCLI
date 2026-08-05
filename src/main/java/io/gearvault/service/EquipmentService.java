@@ -131,4 +131,10 @@ public class EquipmentService {
 
         equipmentRepository.save(eventEquipment);
     }
+
+    public void editBookingNote(EventEquipment eventEquipment, BookingNote bookingNote, LocalDate eventDate, String setupDetails, int headcount, String notes) {
+        int index = eventEquipment.getSetupLogs().indexOf(bookingNote);
+        eventEquipment.getSetupLogs().set(index, new BookingNote(eventDate, setupDetails, headcount, notes));
+        equipmentRepository.save(eventEquipment);
+    }
 }
