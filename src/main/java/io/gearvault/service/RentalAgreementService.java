@@ -107,6 +107,9 @@ public class RentalAgreementService {
     }
 
     public void viewOverdueRentals() {
-        //TODO: Add code here
+        List<RentalAgreement> overdueRentals = rentalAgreementRepository.findByUserIdAndStatus(SessionContext.getUser().getId(), RentalStatus.ACTIVE)
+                .stream()
+                .filter(rentalAgreement -> rentalAgreement.getDueDate().isBefore(LocalDate.now().plusDays(SessionContext.getUser().getOverdueGraceDays()))).toList();
+        displayRentals(overdueRentals);
     }
 }
