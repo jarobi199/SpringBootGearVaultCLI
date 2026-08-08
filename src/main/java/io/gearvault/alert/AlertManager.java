@@ -5,6 +5,7 @@ import io.gearvault.model.Equipment;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -20,6 +21,7 @@ public class AlertManager {
             .flatMap(e -> strategies.stream()
                 .filter(s -> s.supports(e))
                 .map(s -> s.evaluate(e)))
+                .filter(Objects::nonNull)
             .collect(Collectors.toList());
     }
 }
