@@ -40,11 +40,11 @@ public class AlertService {
             Table table = Clique.table(TableType.BOX_DRAW)
                     .headers(
                             "[*blue, bold]ALERT TYPE[/]",
-                            "[*blue, bold]VEHICLE[/]",
+                            "[*blue, bold]EQUIPMENT[/]",
                             "[*blue, bold]MESSAGE[/]"
                     );
             for (AlertResult alertResult : alertResults) {
-                table.row(alertResult.alertType().getDisplayName(), alertResult.equipment().getBrand() + " " + alertResult.equipment().getBrand(),  alertResult.message());
+                table.row(alertResult.alertType().getDisplayName(), alertResult.equipment().getBrand() + " " + alertResult.equipment().getModel(),  alertResult.message());
             }
             table.render();
         }
