@@ -44,11 +44,13 @@ public class MaintenanceMenu implements IMenu {
         Equipment equipment = equipmentMenu.listEquipmentAndSelect(null);
         if (equipment != null) {
             MaintenanceLog maintenanceLog = listMaintenanceLogsAndSelect(equipment);
-            System.out.println("Are you sure that you want to delete this maintenance log? (Y/N)?:");
-            boolean answer = InputHandler.getBooleanInput();
-            if(answer) {
-                maintenanceLogService.deleteMaintenanceLog(maintenanceLog);
-                System.out.println("Maintenance log has been successfully deleted!");
+            if(maintenanceLog != null) {
+                System.out.println("Are you sure that you want to delete this maintenance log? (Y/N)?:");
+                boolean answer = InputHandler.getBooleanInput();
+                if(answer) {
+                    maintenanceLogService.deleteMaintenanceLog(maintenanceLog);
+                    System.out.println("Maintenance log has been successfully deleted!");
+                }
             }
         }
     }
