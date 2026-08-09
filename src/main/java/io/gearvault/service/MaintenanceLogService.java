@@ -29,7 +29,9 @@ public class MaintenanceLogService {
                                                     equipment.getBrand(), equipment.getModel(), serviceDate, serviceType, description, cost, hours, name);
         maintenanceLogRepository.save(maintenanceLog);
 
-        equipment.setStatus(EquipmentStatus.IN_MAINTENANCE);
+        if(EquipmentStatus.AVAILABLE.equals(equipment.getStatus())) {
+            equipment.setStatus(EquipmentStatus.IN_MAINTENANCE);
+        }
         equipmentRepository.save(equipment);
     }
 

@@ -71,6 +71,14 @@ public class EquipmentMenu implements IMenu {
         System.out.println("Enter the new warranty expiry date (yyyy-MM-dd):");
         LocalDate warrantyExpiryDate = InputHandler.getDateInput();
 
+        if(EquipmentStatus.IN_MAINTENANCE.equals(equipment.getStatus())) {
+            System.out.println("This equipment is currently in maintenance. Would you like to mark it as available? (Y/N):");
+            boolean answer = InputHandler.getBooleanInput();
+            if(answer) {
+                equipment.setStatus(EquipmentStatus.AVAILABLE);
+            }
+        }
+
         switch (equipment.getEquipmentType()) {
             case POWER_TOOL -> {
                 PowerTool powerTool = (PowerTool) equipment;
