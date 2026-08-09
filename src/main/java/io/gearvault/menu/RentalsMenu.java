@@ -64,7 +64,7 @@ public class RentalsMenu implements IMenu {
         Equipment equipment = equipmentMenu.listEquipmentAndSelect(null);
         boolean answer = true;
 
-        if (EquipmentStatus.AVAILABLE.equals(equipment.getStatus())) {
+        if (equipment != null &&  EquipmentStatus.AVAILABLE.equals(equipment.getStatus())) {
             if ((equipment instanceof HeavyMachinery heavyMachinery) && heavyMachinery.isRequiresOperatorCert()) {
                 System.out.println(heavyMachinery.getCertWarning());
                 System.out.println("Do you have the required credentials to proceed (Y/N)?:");
@@ -84,7 +84,9 @@ public class RentalsMenu implements IMenu {
         }
         else
         {
-            System.out.println("Only equipment that is marked as available can be checked out!");
+            if (equipment != null) {
+                System.out.println("Only equipment that is marked as available can be checked out! This item is currently " + equipment.getStatus() + ".");
+            }
         }
 
     }
