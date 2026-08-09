@@ -1,6 +1,7 @@
 package io.gearvault.menu;
 
 import io.gearvault.enums.EquipmentCondition;
+import io.gearvault.enums.EquipmentStatus;
 import io.gearvault.enums.RentalStatus;
 import io.gearvault.interfaces.IMenu;
 import io.gearvault.model.Equipment;
@@ -63,22 +64,29 @@ public class RentalsMenu implements IMenu {
         Equipment equipment = equipmentMenu.listEquipmentAndSelect(null);
         boolean answer = true;
 
-        if((equipment instanceof HeavyMachinery heavyMachinery) && heavyMachinery.isRequiresOperatorCert()) {
-            System.out.println(heavyMachinery.getCertWarning());
-            System.out.println("Do you have the required credentials to proceed (Y/N)?:");
-            answer = InputHandler.getBooleanInput();
+        if (EquipmentStatus.AVAILABLE.equals(equipment.getStatus())) {
+            if ((equipment instanceof HeavyMachinery heavyMachinery) && heavyMachinery.isRequiresOperatorCert()) {
+                System.out.println(heavyMachinery.getCertWarning());
+                System.out.println("Do you have the required credentials to proceed (Y/N)?:");
+                answer = InputHandler.getBooleanInput();
+            }
+
+            if (answer) {
+                System.out.println("Please enter the customer name:");
+                String name = InputHandler.getStringInput();
+                System.out.println("Please enter the customer phone:");
+                String phone = InputHandler.getStringInput();
+                System.out.println("Enter the due date (yyyy-MM-dd):");
+                LocalDate dueDate = InputHandler.getDateInput();
+
+                rentalAgreementService.checkOutEquipment(equipment, name, phone, dueDate);
+            }
+        }
+        else
+        {
+            System.out.println("Only equipment that is marked as available can be checked out!");
         }
 
-        if(answer) {
-            System.out.println("Please enter the customer name:");
-            String name = InputHandler.getStringInput();
-            System.out.println("Please enter the customer phone:");
-            String phone = InputHandler.getStringInput();
-            System.out.println("Enter the due date (yyyy-MM-dd):");
-            LocalDate dueDate = InputHandler.getDateInput();
-
-            rentalAgreementService.checkOutEquipment(equipment, name, phone, dueDate);
-        }
     }
 
     @Override
