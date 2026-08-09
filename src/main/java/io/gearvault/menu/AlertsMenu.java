@@ -1,5 +1,6 @@
 package io.gearvault.menu;
 
+import io.gearvault.enums.AlertType;
 import io.gearvault.interfaces.IMenu;
 import io.gearvault.service.AlertService;
 import io.gearvault.util.InputHandler;
@@ -20,12 +21,27 @@ public class AlertsMenu implements IMenu {
             choice = InputHandler.getIntegerInput();
             switch (choice) {
                 case 1 -> viewAllAlerts();
+                case 2 -> viewOverdueAlerts();
+                case 3 -> viewMaintenanceDueAlerts();
+                case 4 -> viewWarrantyExpiringAlerts();
             }
         }
         while (choice != 0);
     }
 
-    private void viewAllAlerts() {
+    public void viewWarrantyExpiringAlerts() {
+        alertService.displayAlerts(AlertType.WARRANTY_EXPIRING);
+    }
+
+    public void viewMaintenanceDueAlerts() {
+        alertService.displayAlerts(AlertType.MAINTENANCE_DUE);
+    }
+
+    public void viewOverdueAlerts() {
+        alertService.displayAlerts(AlertType.OVERDUE_RETURN);
+    }
+
+    public void viewAllAlerts() {
         alertService.displayAlerts(null);
     }
 
