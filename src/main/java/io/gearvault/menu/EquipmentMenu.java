@@ -273,7 +273,7 @@ public class EquipmentMenu implements IMenu {
         System.out.println("[4] View equipment details");
         System.out.println("[5] Edit equipment");
         System.out.println("[6] Add booking note");
-        System.out.println("[6] Edit booking note");
+        System.out.println("[7] Edit booking note");
         System.out.println("[8] Retire equipment");
         System.out.println("[0] Back");
     }

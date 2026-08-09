@@ -51,7 +51,7 @@ public class SettingsMenu implements IMenu {
             System.out.println("Enter your password:");
             String password = InputHandler.getStringInput();
             System.out.println("Enter your role (ADMINISTRATOR, USER):");
-            Role role = Role.valueOf(InputHandler.getStringInput());
+            Role role = Role.valueOf(InputHandler.getStringInput().toUpperCase());
             System.out .println("Enter the number of overdue grace days:");
             int days = InputHandler.getIntegerInput();
 

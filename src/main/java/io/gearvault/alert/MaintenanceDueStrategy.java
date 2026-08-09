@@ -54,7 +54,7 @@ public class MaintenanceDueStrategy implements AlertStrategy {
         if(equipment instanceof HeavyMachinery heavyMachinery) {
             if(!maintenanceLogs.isEmpty()) {
                 MaintenanceLog maintenanceLog = maintenanceLogs.getFirst();
-                if(maintenanceLog.getHoursAtService() - heavyMachinery.getEngineHours() > 250) {
+                if(heavyMachinery.getEngineHours()  - maintenanceLog.getHoursAtService() > 250) {
                     result = true;
                 }
             }
