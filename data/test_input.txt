@@ -1,0 +1,333 @@
+# ============================================================================
+# GearVault — test_input.txt
+# ============================================================================
+# ASSUMPTIONS THIS FILE MAKES:
+#   1. Login is now interactive (automaticLogin() is dead code, no longer
+#      called from MainMenu). The first two input lines below are the
+#      username/password for the pre-existing hsams admin account.
+#   2. The equipment / rental_agreements / maintenance_logs collections are
+#      EMPTY before this run. Equipment selection is done by numbered list
+#      position, and those numbers assume equipment is inserted in the exact
+#      order added in this file (1=Drill, 2=Excavator, 3=Tent, 4=Saw). If
+#      equipment already exists, every "Select equipment:" index below will
+#      be off and will select the wrong item.
+#   3. The Reports menu (Main Menu option 4) is still skipped —
+#      ReportService.createRevenueReport() is still an empty stub, even
+#      though RevenueReport/RevenueLineItem model classes now exist.
+#   4. "Change password" (Settings option 1) is still skipped. This no
+#      longer risks breaking automaticLogin() since it's unused now — the
+#      only reason to skip it is that changing it here would require
+#      updating the login lines at the top of this file for the NEXT run.
+#      Ask if you want it added in.
+#   5. This run deliberately exercises the checkOutEquipment() status-guard
+#      fix and the editEquipmentDetails() "mark as available" recovery
+#      fix together: log maintenance on the Excavator (flips it to
+#      IN_MAINTENANCE) -> attempt to check it out again (should be
+#      rejected) -> edit it and answer Y to the recovery prompt (flips it
+#      back to AVAILABLE). This is new coverage beyond the original file.
+#   6. Dates that need to reliably trigger date-based alerts (overdue
+#      return, warranty expiring, maintenance due) are hardcoded well into
+#      the past or future so the alert fires regardless of what day this
+#      is actually run — not because those specific dates are meaningful.
+# ============================================================================
+
+
+# ============================================================================
+# LOGIN (AuthenticateMenu.show() — loops until authenticated)
+# ============================================================================
+hsams
+password
+
+
+# ============================================================================
+# MAIN MENU -> [1] Equipment
+# ============================================================================
+1
+
+# --- TEST 1: Add Equipment - Power Tool (Drill) ---
+# Kept RENTED with an overdue due date for the whole run so it can
+# demonstrate OVERDUE_RETURN later. Warranty is already expired so it also
+# demonstrates WARRANTY_EXPIRING. No maintenance log is ever added for it,
+# and its purchase date is >6 months old, so it also demonstrates
+# MAINTENANCE_DUE via the "no logs, old purchase date" path.
+3
+POWER_TOOL
+Cordless Drill
+DeWalt
+DCD771C2
+PT-1001
+129.99
+2020-06-15
+2025-01-01
+GOOD
+Standard cordless drill kit with two batteries
+Y
+20
+DRILL
+Y
+8.00
+35.00
+
+# --- TEST 2: Add Equipment - Heavy Machinery (Excavator) ---
+3
+HEAVY_MACHINERY
+Mini Excavator
+Bobcat
+E35
+HM-2001
+45000.00
+2022-03-10
+2027-03-10
+GOOD
+Compact excavator, well maintained
+1400
+Y
+DIESEL
+220.00
+500.00
+
+# --- TEST 3: Add Equipment - Event Equipment (Tent) ---
+3
+EVENT_EQUIPMENT
+20x40 Frame Tent
+PartyPro
+Frame40
+EE-3001
+3200.00
+2023-05-01
+2028-01-01
+EXCELLENT
+Frame tent with sidewalls
+TENT
+1
+Y
+450.00
+
+# --- TEST 4: Add Equipment - Power Tool (Saw, dedicated retire target) ---
+3
+POWER_TOOL
+Circular Saw
+Ryobi
+P507
+PT-1002
+89.00
+2023-01-01
+2028-01-01
+FAIR
+Worn blade guard, scheduled for retirement
+Y
+18
+SAW
+N
+6.00
+28.00
+
+# --- TEST 5: List all equipment ---
+1
+
+# --- TEST 6: List all available equipment ---
+2
+
+# --- TEST 7: View equipment detail (Drill) ---
+4
+1
+
+# --- TEST 8: Edit equipment (Excavator) — still AVAILABLE at this point,
+# so the "mark as available" recovery prompt should NOT appear yet ---
+5
+2
+EXCELLENT
+Recently serviced, excellent working condition
+2027-03-10
+235.00
+550.00
+
+# --- TEST 9: Add booking note (Tent) ---
+6
+1
+2026-09-12
+Backyard wedding reception setup
+120
+Client requested early morning setup
+
+# --- TEST 10: Edit booking note (Tent) ---
+7
+1
+1
+2026-09-13
+Backyard wedding reception setup - date corrected
+130
+Client requested early morning setup; headcount revised upward
+
+# --- TEST 11: Retire equipment (Saw) ---
+8
+4
+Y
+
+# Back to Main Menu
+0
+
+
+# ============================================================================
+# MAIN MENU -> [2] Rentals
+# ============================================================================
+2
+
+# --- TEST 12: Check out equipment (Drill) — left ACTIVE/overdue on purpose ---
+1
+1
+Marcus Webb
+555-201-3344
+2020-07-01
+
+# --- TEST 13: Check out equipment (Excavator) — triggers cert warning ---
+1
+2
+Y
+Dana Whitfield
+555-778-2290
+2030-01-01
+
+# --- TEST 14: View active rentals ---
+3
+
+# --- TEST 15: View overdue rentals (should show the Drill) ---
+4
+
+# --- TEST 16: Check in equipment (Excavator — on-time, normal return) ---
+2
+2
+GOOD
+
+# --- TEST 17: View rental history ---
+5
+
+# Back to Main Menu
+0
+
+
+# ============================================================================
+# MAIN MENU -> [3] Maintenance
+# ============================================================================
+3
+
+# --- TEST 18: Log maintenance record (Excavator) — flips it to
+# IN_MAINTENANCE since it's currently AVAILABLE (post check-in) ---
+1
+2
+2024-02-01
+ENGINE_SERVICE
+1000-hour scheduled engine service
+450.00
+1000
+Sam Diaz
+
+# --- TEST 19: View history by equipment (Excavator) ---
+2
+2
+
+# --- TEST 20: View all recent records ---
+3
+
+# --- TEST 21: Delete record (Excavator's log) — deleting the log does NOT
+# revert equipment status, so the Excavator stays IN_MAINTENANCE ---
+4
+2
+1
+Y
+
+# Back to Main Menu
+0
+
+
+# ============================================================================
+# MAIN MENU -> [2] Rentals (revisit) — TEST 22: Attempt to check out the
+# Excavator while it's IN_MAINTENANCE. Should be rejected by the fixed
+# checkOutEquipment() status guard, with no further prompts consumed.
+# ============================================================================
+2
+1
+2
+
+# Back to Main Menu
+0
+
+
+# ============================================================================
+# MAIN MENU -> [1] Equipment (revisit) — TEST 23: Edit the Excavator while
+# it's IN_MAINTENANCE. Should trigger the "mark as available?" recovery
+# prompt this time; answering Y flips it back to AVAILABLE.
+# ============================================================================
+1
+5
+2
+EXCELLENT
+Post-maintenance service complete, back in service
+2027-03-10
+Y
+235.00
+550.00
+
+# Back to Main Menu
+0
+
+
+# ============================================================================
+# MAIN MENU -> [4] Reports — SKIPPED (ReportService.createRevenueReport()
+# is still an empty stub)
+# ============================================================================
+
+
+# ============================================================================
+# MAIN MENU -> [5] Alerts
+# ============================================================================
+5
+
+# --- TEST 24: View all alerts ---
+1
+
+# --- TEST 25: Overdue return alerts (Drill) ---
+2
+
+# --- TEST 26: Maintenance due alerts (Drill, Excavator, Tent, retired Saw) ---
+3
+
+# --- TEST 27: Warranty expiring alerts (Drill) ---
+4
+
+# Back to Main Menu
+0
+
+
+# ============================================================================
+# MAIN MENU -> [6] Settings
+# ============================================================================
+6
+
+# --- TEST 28: Set overdue grace days ---
+2
+5
+
+# --- TEST 29: Add user (admin only) ---
+# Role.valueOf() now correctly calls .toUpperCase(), but typing exact case
+# here anyway for clarity.
+3
+Priya Chandra
+pchandra
+TempPass456
+USER
+3
+
+# --- TEST 30: Delete user (admin only) — clean up the user just added ---
+4
+pchandra
+Y
+
+# Back to Main Menu
+0
+
+
+# ============================================================================
+# MAIN MENU -> [0] Exit
+# ============================================================================
+0
