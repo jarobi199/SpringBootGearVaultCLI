@@ -98,6 +98,7 @@ public class EquipmentService {
         System.out.println(equipment.getSummary());
         System.out.println();
         maintenanceLogService.viewHistory(equipment);
+        System.out.println();
         rentalAgreementService.viewRentalHistory(equipment);
     }
 

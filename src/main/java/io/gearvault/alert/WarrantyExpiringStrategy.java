@@ -19,7 +19,7 @@ public class WarrantyExpiringStrategy implements AlertStrategy {
     public AlertResult evaluate(Equipment equipment) {
         AlertResult alertResult = null;
         long days = ChronoUnit.DAYS.between(LocalDate.now(), equipment.getWarrantyExpiry());
-        if (days <= 30) {
+        if (days > 0 && days <= 30) {
             alertResult = new AlertResult(equipment, AlertType.WARRANTY_EXPIRING, "This warranty is about to expiry in " + days + " days!");
         }
 
