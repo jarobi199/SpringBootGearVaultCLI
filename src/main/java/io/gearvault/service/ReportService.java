@@ -1,6 +1,7 @@
 package io.gearvault.service;
 
 import io.gearvault.authentication.SessionContext;
+import io.gearvault.enums.EquipmentStatus;
 import io.gearvault.enums.EquipmentType;
 import io.gearvault.enums.RentalStatus;
 import io.gearvault.model.Equipment;
@@ -63,6 +64,22 @@ public class ReportService {
             barChartTable.bar(entry.getKey().name(), entry.getValue());
         }
         barChartTable.maxWidth(40).render();
+
+    }
+
+    public void createUtilizationReport() {
+        List<Equipment> equipmentList = equipmentRepository.findByUserId(SessionContext.getUser().getId());
+        int totalEquipment = equipmentList.size();
+        long totalRented = equipmentList.stream().filter(equipment -> EquipmentStatus.RENTED.equals(equipment.getStatus())).count();
+        long totalAvailable = equipmentList.stream().filter(equipment -> EquipmentStatus.AVAILABLE.equals(equipment.getStatus())).count();
+        long utilizationRatePercent = (totalRented * 100) / totalEquipment;
+
+        //Utilization Rate By Equipment Type
+        Map<EquipmentType, Long> utilizationByTypeMap = new HashMap<>();
+        for(EquipmentType equipmentType : EquipmentType.values()) {
+            long value = (equipmentList.stream().filter(equipment -> EquipmentStatus.RENTED.equals(equipment.getStatus()) && (equipment.getEquipmentType().equals(equipmentType))).count() * 100) / totalEquipment;
+            utilizationByTypeMap.put(equipmentType, value);
+        }
 
     }
 }

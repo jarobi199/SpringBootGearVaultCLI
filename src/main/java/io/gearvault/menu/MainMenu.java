@@ -31,7 +31,7 @@ public class MainMenu implements IMenu {
 
         System.out.println();
         displayTitle();
-        authenticateMenu.show();
+        authenticateMenu.automaticLogin();
         System.out.println();
 
         do {
