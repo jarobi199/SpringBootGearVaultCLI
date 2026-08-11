@@ -11,6 +11,10 @@ import io.gearvault.repository.EquipmentRepository;
 
 import io.gearvault.repository.RentalAgreementRepository;
 import io.gearvault.util.BarChartUtil;
+import io.gearvault.util.InputHandler;
+import io.github.kusoroadeolu.clique.Clique;
+import io.github.kusoroadeolu.clique.components.Table;
+import io.github.kusoroadeolu.clique.configuration.TableType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +59,17 @@ public class ReportService {
 
         //Display Revenue Report
         RevenueReport revenueReport = new RevenueReport(totalRevenue, revenueByType, depositsOutstanding, topEarningItems);
-        //TODO: Add code here
+
+        System.out.println("| REVENUE REPORT |");
+        Table revenueReportTable = Clique.table(TableType.BOX_DRAW)
+                .headers(
+                        "[*blue, bold]TOTAL REVENUE[/]",
+                        "[*blue, bold]TOTAL OUTSTANDING DEPOSITS (ACTIVE RENTALS)[/]"
+                );
+        equipmentList.forEach(equipment -> {
+            revenueReportTable.row(InputHandler.formatAsMoney(revenueReport.totalRevenue()), InputHandler.formatAsMoney(revenueReport.depositOutstanding()));
+        });
+        revenueReportTable.render();
 
         //Display Barchart
         BarChartUtil.Builder barChartTable = BarChartUtil.builder().title("Revenue By Equipment Type");
@@ -64,5 +78,17 @@ public class ReportService {
         }
         barChartTable.maxWidth(40).render();
 
+        System.out.println("| REVENUE BY EQUIPMENT |");
+        Table revenueByEquipmentTable = Clique.table(TableType.BOX_DRAW)
+                .headers(
+                        "[*blue, bold]EQUIPMENT NAME[/]",
+                        "[*blue, bold]EQUIPMENT TYPE[/]",
+                        "[*blue, bold]REVENUE[/]"
+                );
+        for(RevenueLineItem revenueLineItem : revenueReport.topEarningItems()) {
+            revenueByEquipmentTable.row(revenueLineItem.equipmentName(), revenueLineItem.equipmentType().name(),  InputHandler.formatAsMoney(revenueLineItem.revenue()));
+        }
+        revenueByEquipmentTable.render();
     }
+
 }
