@@ -67,9 +67,7 @@ public class ReportService {
                         "[*blue, bold]TOTAL REVENUE[/]",
                         "[*blue, bold]TOTAL OUTSTANDING DEPOSITS (ACTIVE RENTALS)[/]"
                 );
-        equipmentList.forEach(equipment -> {
-            revenueReportTable.row(InputHandler.formatAsMoney(revenueReport.totalRevenue()), InputHandler.formatAsMoney(revenueReport.depositOutstanding()));
-        });
+        revenueReportTable.row(InputHandler.formatAsMoney(revenueReport.totalRevenue()), InputHandler.formatAsMoney(revenueReport.depositOutstanding()));
         revenueReportTable.render();
 
         //Display Barchart
@@ -78,6 +76,18 @@ public class ReportService {
             barChartTable.bar(entry.getKey().name(), entry.getValue());
         }
         barChartTable.maxWidth(40).render();
+
+        System.out.println("| REVENUE BY EQUIPMENT |");
+        Table revenueByEquipmentTable = Clique.table(TableType.BOX_DRAW)
+                .headers(
+                        "[*blue, bold]EQUIPMENT NAME[/]",
+                        "[*blue, bold]EQUIPMENT TYPE[/]",
+                        "[*blue, bold]REVENUE[/]"
+                );
+        for(RevenueLineItem revenueLineItem : revenueReport.topEarningItems()) {
+            revenueByEquipmentTable.row(revenueLineItem.equipmentName(), revenueLineItem.equipmentType().name(),  InputHandler.formatAsMoney(revenueLineItem.revenue()));
+        }
+        revenueByEquipmentTable.render();
 
     }
 
@@ -95,17 +105,7 @@ public class ReportService {
             utilizationByTypeMap.put(equipmentType, value);
         }
 
-        System.out.println("| REVENUE BY EQUIPMENT |");
-        Table revenueByEquipmentTable = Clique.table(TableType.BOX_DRAW)
-                .headers(
-                        "[*blue, bold]EQUIPMENT NAME[/]",
-                        "[*blue, bold]EQUIPMENT TYPE[/]",
-                        "[*blue, bold]REVENUE[/]"
-                );
-        for(RevenueLineItem revenueLineItem : revenueReport.topEarningItems()) {
-            revenueByEquipmentTable.row(revenueLineItem.equipmentName(), revenueLineItem.equipmentType().name(),  InputHandler.formatAsMoney(revenueLineItem.revenue()));
-        }
-        revenueByEquipmentTable.render();
+
     }
 
 }
