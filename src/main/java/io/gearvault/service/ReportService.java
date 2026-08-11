@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ReportService {
@@ -104,6 +105,15 @@ public class ReportService {
             long value = (equipmentList.stream().filter(equipment -> EquipmentStatus.RENTED.equals(equipment.getStatus()) && (equipment.getEquipmentType().equals(equipmentType))).count() * 100) / totalEquipment;
             utilizationByTypeMap.put(equipmentType, value);
         }
+        utilizationByTypeMap = utilizationByTypeMap.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, _) -> e1,
+                        LinkedHashMap::new
+                ));
 
         System.out.println("| UTILIZATION REPORT |");
         Table utilizationReportTable = Clique.table(TableType.BOX_DRAW)
