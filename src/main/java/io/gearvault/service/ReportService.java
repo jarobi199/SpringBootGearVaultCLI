@@ -105,7 +105,28 @@ public class ReportService {
             utilizationByTypeMap.put(equipmentType, value);
         }
 
+        System.out.println("| UTILIZATION REPORT |");
+        Table utilizationReportTable = Clique.table(TableType.BOX_DRAW)
+                .headers(
+                        "[*blue, bold]TOTAL EQUIPMENT COUNT[/]",
+                        "[*blue, bold]EQUIPMENT AVAILABLE[/]",
+                        "[*blue, bold]EQUIPMENT RENTED[/]",
+                        "[*blue, bold]UTILIZATION RATE[/]"
+                );
+        utilizationReportTable.row(String.valueOf(totalEquipment), String.valueOf(totalAvailable),  String.valueOf(totalRented), utilizationRatePercent + "%");
+        utilizationReportTable.render();
 
+        System.out.println();
+        System.out.println("| UTILIZATION RATE BY EQUIPMENT TYPE |");
+        Table utilizationRateByEquipmentTypeTable = Clique.table(TableType.BOX_DRAW)
+                .headers(
+                        "[*blue, bold]EQUIPMENT TYPE[/]",
+                        "[*blue, bold]UTILIZATION RATE[/]"
+                );
+        for(Map.Entry<EquipmentType, Long> entry : utilizationByTypeMap.entrySet()) {
+            utilizationRateByEquipmentTypeTable.row(entry.getKey().name(), entry.getValue() + "%");
+        }
+        utilizationRateByEquipmentTypeTable.render();
     }
 
 }
