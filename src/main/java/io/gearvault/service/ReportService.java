@@ -139,4 +139,7 @@ public class ReportService {
         utilizationRateByEquipmentTypeTable.render();
     }
 
+    public void createOverdueReport() {
+
+    }
 }

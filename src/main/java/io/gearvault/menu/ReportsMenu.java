@@ -22,9 +22,14 @@ public class ReportsMenu implements IMenu {
             switch (choice) {
                 case 1 -> revenueReport();
                 case 2 -> utilizationReport();
+                case 3 -> overdueReport();
             }
         }
         while (choice != 0);
+    }
+
+    private void overdueReport() {
+        reportService.createOverdueReport();
     }
 
     public void utilizationReport() {
