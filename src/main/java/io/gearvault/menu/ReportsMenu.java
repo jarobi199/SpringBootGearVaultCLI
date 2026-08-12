@@ -23,12 +23,17 @@ public class ReportsMenu implements IMenu {
                 case 1 -> revenueReport();
                 case 2 -> utilizationReport();
                 case 3 -> overdueReport();
+                case 4 -> maintenanceCostByType();
             }
         }
         while (choice != 0);
     }
 
-    private void overdueReport() {
+    public void maintenanceCostByType() {
+        reportService.maintenanceCostByType();
+    }
+
+    public void overdueReport() {
         reportService.createOverdueReport();
     }
 

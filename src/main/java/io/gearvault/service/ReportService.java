@@ -4,12 +4,11 @@ import io.gearvault.authentication.SessionContext;
 import io.gearvault.enums.EquipmentStatus;
 import io.gearvault.enums.EquipmentType;
 import io.gearvault.enums.RentalStatus;
-import io.gearvault.model.Equipment;
-import io.gearvault.model.RentalAgreement;
-import io.gearvault.model.RevenueLineItem;
-import io.gearvault.model.RevenueReport;
+import io.gearvault.enums.ServiceType;
+import io.gearvault.model.*;
 import io.gearvault.repository.EquipmentRepository;
 
+import io.gearvault.repository.MaintenanceLogRepository;
 import io.gearvault.repository.RentalAgreementRepository;
 import io.gearvault.util.BarChartUtil;
 import io.gearvault.util.InputHandler;
@@ -30,6 +29,8 @@ public class ReportService {
     private EquipmentRepository equipmentRepository;
     @Autowired
     private RentalAgreementRepository rentalAgreementRepository;
+    @Autowired
+    private MaintenanceLogRepository maintenanceLogRepository;
 
     public void createRevenueReport() {
         List<RentalAgreement> rentalAgreements = rentalAgreementRepository.findByUserId(SessionContext.getUser().getId());
@@ -163,4 +164,32 @@ public class ReportService {
         }
         overdueRentalsTable.render();
     }
+
+    public void maintenanceCostByType() {
+        List<MaintenanceLog> maintenanceLogList = maintenanceLogRepository.findByUserIdOrderByServiceDateDesc(SessionContext.getUser().getId());
+        Map<ServiceType, Double> maintenanceCostByTypeMap = new LinkedHashMap<>();
+        for(ServiceType serviceType : ServiceType.values()) {
+            double total = maintenanceLogList.stream().filter(maintenanceLog -> maintenanceLog.getServiceType().equals(serviceType)).mapToDouble(MaintenanceLog::getCost).sum();
+            maintenanceCostByTypeMap.put(serviceType, total);
+        }
+
+        //Sort
+        maintenanceCostByTypeMap = maintenanceCostByTypeMap.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, _) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        //Display Barchart
+        BarChartUtil.Builder barChartTable = BarChartUtil.builder().title("Maintenance Cost By Service Type");
+        for (Map.Entry<ServiceType, Double> entry : maintenanceCostByTypeMap.entrySet()) {
+            barChartTable.bar(entry.getKey().name(), entry.getValue());
+        }
+        barChartTable.maxWidth(40).render();
+    }
+
 }
