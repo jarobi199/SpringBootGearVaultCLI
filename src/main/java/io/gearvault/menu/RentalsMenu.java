@@ -51,9 +51,11 @@ public class RentalsMenu implements IMenu {
 
     public void checkInEquipment() {
         RentalAgreement rentalAgreement =  listRentalAgreementsAndSelect();
+        System.out.println("Enter the return date (yyyy-MM-dd):");
+        LocalDate returnDate = InputHandler.getDateInput();
         System.out.println("What is the condition of the unit?:");
         EquipmentCondition equipmentCondition = EquipmentCondition.valueOf(InputHandler.getStringInput().toUpperCase());
-        rentalAgreementService.checkInEquipment(rentalAgreement, equipmentCondition);
+        rentalAgreementService.checkInEquipment(rentalAgreement, equipmentCondition, returnDate);
     }
 
     public void viewActiveRentals() {

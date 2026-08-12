@@ -84,7 +84,7 @@ public class PowerTool extends Equipment {
 
     @Override
     public double computeRentalCost(int days) {
-        return rateStrategy.computeCost(this,days);
+        return rateStrategy.computeCost(this, days);
     }
 
     @Override

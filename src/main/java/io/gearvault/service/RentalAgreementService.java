@@ -33,10 +33,10 @@ public class RentalAgreementService {
 
     public void checkOutEquipment(Equipment equipment, String name, String phone, LocalDate dueDate) {
         double depositAmount = EquipmentType.HEAVY_MACHINERY.equals(equipment.getEquipmentType()) ? ((HeavyMachinery) equipment).getDeposit() : 0.0;
-        long days = ChronoUnit.DAYS.between(LocalDate.now(), dueDate);
+        int days = Math.toIntExact(Math.abs(ChronoUnit.DAYS.between(LocalDate.now(), dueDate)));
         equipment.setStatus(EquipmentStatus.RENTED);
         RentalAgreement  rentalAgreement = new RentalAgreement(SessionContext.getUser().getId(), equipment.getId(), equipment.getName(), equipment.getSerialNumber(),
-                equipment.getBrand(), equipment.getModel(), name, phone, LocalDate.now(), dueDate, null, depositAmount, RentalStatus.ACTIVE, days);
+                equipment.getBrand(), equipment.getModel(), name, phone, LocalDate.now(), dueDate, null, depositAmount, RentalStatus.ACTIVE, equipment.computeRentalCost(days));
 
         rentalAgreementRepository.save(rentalAgreement);
         equipmentRepository.save(equipment);
@@ -82,21 +82,30 @@ public class RentalAgreementService {
         return rentalAgreementRepository.findByUserIdAndStatus(SessionContext.getUser().getId(), rentalStatus);
     }
 
-    public void checkInEquipment(RentalAgreement rentalAgreement, EquipmentCondition equipmentCondition) {
-        Optional<Equipment> optionalEquipment = equipmentRepository.findById(rentalAgreement.getEquipmentId());
-        optionalEquipment.ifPresent(equipment -> {
-            rentalAgreement.setReturnDate(LocalDate.now());
-            rentalAgreement.setStatus(RentalStatus.RETURNED);
-            equipment.setStatus(EquipmentStatus.AVAILABLE);
-            equipment.setCondition(equipmentCondition);
+    public void checkInEquipment(RentalAgreement rentalAgreement, EquipmentCondition equipmentCondition, LocalDate returnDate) {
+        if(returnDate.isBefore(rentalAgreement.getCheckOutDate())) {
+            System.out.println("The returned equipment date is before the check out date!");
+        }
+        else
+        {
+            Optional<Equipment> optionalEquipment = equipmentRepository.findById(rentalAgreement.getEquipmentId());
+            optionalEquipment.ifPresent(equipment -> {
+                rentalAgreement.setReturnDate(returnDate);
+                rentalAgreement.setStatus(RentalStatus.RETURNED);
+                equipment.setStatus(EquipmentStatus.AVAILABLE);
+                equipment.setCondition(equipmentCondition);
 
-            equipmentRepository.save(equipment);
-            rentalAgreementRepository.save(rentalAgreement);
-        });
+                int days = Math.toIntExact(Math.abs(ChronoUnit.DAYS.between(rentalAgreement.getCheckOutDate(), rentalAgreement.getReturnDate())));
+                rentalAgreement.setTotalCost(equipment.computeRentalCost(days));
 
-        if (rentalAgreement.getReturnDate().isAfter(rentalAgreement.getDueDate())) {
-            long lateDays = ChronoUnit.DAYS.between(rentalAgreement.getDueDate(), rentalAgreement.getReturnDate());
-            System.out.println(AlertStrategy.ANSI_YELLOW + "This equipment was " + lateDays + " overdue!" + AlertStrategy.ANSI_RESET);
+                equipmentRepository.save(equipment);
+                rentalAgreementRepository.save(rentalAgreement);
+            });
+
+            if (rentalAgreement.getReturnDate().isAfter(rentalAgreement.getDueDate())) {
+                long lateDays = ChronoUnit.DAYS.between(rentalAgreement.getDueDate(), rentalAgreement.getReturnDate());
+                System.out.println(AlertStrategy.ANSI_YELLOW + "This equipment was " + lateDays + " overdue!" + AlertStrategy.ANSI_RESET);
+            }
         }
     }
 
