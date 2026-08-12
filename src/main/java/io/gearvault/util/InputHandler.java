@@ -14,7 +14,7 @@ public class InputHandler {
     // the command line. Flip back to false for normal operation.
     // ----------------------------------------------------------------
     private static final boolean DEBUG = false;
-    private static final String DEBUG_FILE = "C:\\Users\\jarob\\Documents\\Java\\Claude\\SpringBootAutoWarehouseCLI\\data\\test_input.txt";
+    private static final String DEBUG_FILE = "C:\\Users\\jarob\\Documents\\Java\\Claude\\SpringBootGearVaultCLI\\data\\test_input.txt";
     private static final int DEBUG_DELAY_MS = 1000;
 
     private static final Scanner consoleScanner = new Scanner(System.in);
@@ -50,7 +50,7 @@ public class InputHandler {
             while ((line = debugReader.readLine()) != null) {
                 String trimmed = line.trim();
                 // Skip blank lines and comment lines
-                if (trimmed.contains("--- TEST")) {
+                if (trimmed.contains("# --- TEST")) {
                     stepCounter++;
                     continue;
                 }

@@ -2,36 +2,39 @@
 # GearVault — test_input.txt
 # ============================================================================
 # ASSUMPTIONS THIS FILE MAKES:
-#   1. Login is now interactive (automaticLogin() is dead code, no longer
-#      called from MainMenu). The first two input lines below are the
-#      username/password for the pre-existing hsams admin account.
+#   1. Login is interactive. The first two lines below are the username and
+#      password for the pre-existing hsams admin account.
 #   2. The equipment / rental_agreements / maintenance_logs collections are
-#      EMPTY before this run. Equipment selection is done by numbered list
+#      EMPTY before this run. Equipment is selected by numbered list
 #      position, and those numbers assume equipment is inserted in the exact
-#      order added in this file (1=Drill, 2=Excavator, 3=Tent, 4=Saw). If
-#      equipment already exists, every "Select equipment:" index below will
-#      be off and will select the wrong item.
-#   3. The Reports menu (Main Menu option 4) is still skipped — you're still
-#      working on it.
-#   4. "Change password" (Settings option 1) is still skipped. Testing it
-#      here would mean updating the login lines at the top of this file for
-#      the NEXT run. Ask if you want it added in.
-#   5. This run ends with data left in place on purpose, not cleaned up:
-#        - THREE rental agreements: Drill (ACTIVE, overdue), Tent (ACTIVE,
-#          not yet due), Excavator (RETURNED). One of each state.
-#        - TWO maintenance records left standing (one on the Drill, one on
-#          the Excavator) — a THIRD throwaway record is logged on the Drill
-#          specifically to be deleted, so the delete flow still gets
-#          exercised without wiping out the only records that exist.
-#   6. This run also exercises the checkOutEquipment() status-guard fix and
-#      the editEquipmentDetails() "mark as available" recovery fix together:
-#      logging maintenance on the Excavator flips it to IN_MAINTENANCE ->
-#      an attempted checkout should be rejected -> editing it and answering
-#      Y to the recovery prompt flips it back to AVAILABLE.
-#   7. Dates that need to reliably trigger date-based alerts (overdue
-#      return, warranty expiring, maintenance due) are hardcoded well into
-#      the past or future so the alert fires regardless of what day this
-#      is actually run — not because those specific dates are meaningful.
+#      order added in this file (1=Drill, 2=Excavator, 3=Tent, 4=Saw).
+#   3. Reports is now fully implemented, so it's tested here rather than
+#      skipped.
+#   4. "Change password" (Settings option 1) is still skipped — not because
+#      it's risky anymore, just wasn't asked for. Say the word if you want
+#      it added in.
+#   5. Rental due dates are kept within about a year of each other, not
+#      spanning multiple years, since totalCost is derived from the day
+#      span and multi-year spans were producing unrealistically large costs.
+#   6. Check-in return dates are fixed calendar dates chosen a few weeks
+#      out from whenever this file was generated, since checkoutDate is
+#      whatever LocalDate.now() is at the moment you actually run this, and
+#      returnDate must be >= checkoutDate or checkInEquipment() rejects it.
+#      This assumes you run this file within roughly a month or so of
+#      generation — if you wait much longer, push these dates forward
+#      before running, or the Excavator check-ins may get rejected.
+#   7. This run exercises both a normal/early return AND a late return on
+#      the Excavator (checked out and returned twice), to give the new
+#      Reports functionality richer, more realistic data than a single
+#      cost datapoint would.
+#   8. This run also exercises the checkOutEquipment() status-guard fix and
+#      the editEquipmentDetails() "mark as available" recovery fix
+#      together: logging maintenance on the Excavator flips it to
+#      IN_MAINTENANCE -> an attempted checkout is rejected -> editing it
+#      and answering Y to the recovery prompt flips it back to AVAILABLE.
+#   9. Dates for the Drill's OVERDUE_RETURN, WARRANTY_EXPIRING, and
+#      MAINTENANCE_DUE alerts are chosen safely in the past so those alerts
+#      fire regardless of the exact day this is run.
 # ============================================================================
 
 
@@ -78,7 +81,7 @@ E35
 HM-2001
 45000.00
 2022-03-10
-2027-03-10
+2026-08-30
 GOOD
 Compact excavator, well maintained
 1400
@@ -174,14 +177,16 @@ Y
 # ============================================================================
 2
 
-# --- TEST 12: Check out equipment (Drill) — left ACTIVE/overdue on purpose ---
+# --- TEST 12: Check out equipment (Drill) — left ACTIVE/overdue for the
+# whole run, never checked in ---
 1
 1
 Marcus Webb
 555-201-3344
 2025-09-01
 
-# --- TEST 13: Check out equipment (Excavator) — triggers cert warning ---
+# --- TEST 13: Check out equipment (Excavator, 1st rental) — triggers cert
+# warning ---
 1
 2
 Y
@@ -196,18 +201,39 @@ Renee Ortiz
 555-334-8890
 2026-10-01
 
-# --- TEST 15: View active rentals (Drill + Tent) ---
+# --- TEST 15: View active rentals (Drill + Excavator + Tent) ---
 3
 
 # --- TEST 16: View overdue rentals (should show only the Drill) ---
 4
 
-# --- TEST 17: Check in equipment (Excavator — on-time, normal return) ---
+# --- TEST 17: Check in equipment (Excavator, 1st rental) — returned well
+# before its due date. totalCost should recompute DOWN from the original
+# checkout estimate to reflect the short actual rental span. ---
 2
 2
+2026-09-05
 GOOD
 
-# --- TEST 18: View rental history (all three agreements) ---
+# --- TEST 18: Check out equipment (Excavator, 2nd rental) — triggers cert
+# warning again; this cycle is set up to be returned late ---
+1
+2
+Y
+Leo Park
+555-410-2276
+2026-08-20
+
+# --- TEST 19: Check in equipment (Excavator, 2nd rental) — returned after
+# its due date. totalCost should recompute UP from the checkout estimate,
+# and the overdue-days message should print. ---
+2
+2
+2026-09-10
+FAIR
+
+# --- TEST 20: View rental history (Drill + Tent active, Excavator x2
+# returned) ---
 5
 
 # Back to Main Menu
@@ -219,7 +245,7 @@ GOOD
 # ============================================================================
 3
 
-# --- TEST 19: Log maintenance record (Excavator) — flips it to
+# --- TEST 21: Log maintenance record (Excavator) — flips it to
 # IN_MAINTENANCE since it's currently AVAILABLE (post check-in). This
 # record is kept. ---
 1
@@ -231,7 +257,7 @@ ENGINE_SERVICE
 1000
 Sam Diaz
 
-# --- TEST 20: Log maintenance record (Drill) — logged while the Drill is
+# --- TEST 22: Log maintenance record (Drill) — logged while the Drill is
 # still RENTED/overdue; per the fixed guard this does NOT change its
 # status since it isn't AVAILABLE. This record is kept. ---
 1
@@ -243,8 +269,8 @@ Routine cleaning and blade inspection
 5
 Mike Torres
 
-# --- TEST 21: Log a second, throwaway maintenance record (Drill) —
-# logged in error, to be deleted in TEST 24 so the delete flow still gets
+# --- TEST 23: Log a second, throwaway maintenance record (Drill) —
+# logged in error, to be deleted in TEST 26 so the delete flow still gets
 # exercised without removing the only records on file. ---
 1
 1
@@ -255,14 +281,14 @@ Duplicate entry, logged in error
 5
 Mike Torres
 
-# --- TEST 22: View history by equipment (Drill — should show 2 records) ---
+# --- TEST 24: View history by equipment (Drill — should show 2 records) ---
 2
 1
 
-# --- TEST 23: View all recent records (should show 3 records total) ---
+# --- TEST 25: View all recent records (should show 3 records total) ---
 3
 
-# --- TEST 24: Delete record (Drill's throwaway duplicate — the 2nd of its
+# --- TEST 26: Delete record (Drill's throwaway duplicate — the 2nd of its
 # 2 logs, leaving the real cleaning record and the Excavator's record
 # intact) ---
 4
@@ -275,9 +301,10 @@ Y
 
 
 # ============================================================================
-# MAIN MENU -> [2] Rentals (revisit) — TEST 25: Attempt to check out the
-# Excavator while it's IN_MAINTENANCE. Should be rejected by the fixed
-# checkOutEquipment() status guard, with no further prompts consumed.
+# MAIN MENU -> [2] Rentals (revisit) — TEST 27: Attempt to check out the
+# Excavator while it's IN_MAINTENANCE (set in TEST 21, untouched since).
+# Should be rejected by the checkOutEquipment() status guard, with no
+# further prompts consumed.
 # ============================================================================
 2
 1
@@ -288,7 +315,7 @@ Y
 
 
 # ============================================================================
-# MAIN MENU -> [1] Equipment (revisit) — TEST 26: Edit the Excavator while
+# MAIN MENU -> [1] Equipment (revisit) — TEST 28: Edit the Excavator while
 # it's IN_MAINTENANCE. Should trigger the "mark as available?" recovery
 # prompt this time; answering Y flips it back to AVAILABLE.
 # ============================================================================
@@ -307,8 +334,24 @@ Y
 
 
 # ============================================================================
-# MAIN MENU -> [4] Reports — SKIPPED (still in progress)
+# MAIN MENU -> [4] Reports — none of these prompt for further input
 # ============================================================================
+4
+
+# --- TEST 29: Revenue report ---
+1
+
+# --- TEST 30: Utilization report ---
+2
+
+# --- TEST 31: Overdue report ---
+3
+
+# --- TEST 32: Maintenance cost by type ---
+4
+
+# Back to Main Menu
+0
 
 
 # ============================================================================
@@ -316,19 +359,19 @@ Y
 # ============================================================================
 5
 
-# --- TEST 27: View all alerts ---
+# --- TEST 33: View all alerts ---
 1
 
-# --- TEST 28: Overdue return alerts (Drill) ---
+# --- TEST 34: Overdue return alerts (Drill) ---
 2
 
-# --- TEST 29: Maintenance due alerts (Drill and Excavator both have logs,
+# --- TEST 35: Maintenance due alerts (Drill and Excavator both have logs,
 # but the logged service dates are old enough to still trigger the "recent
 # service is more than 6 months old" branch; Tent and the retired Saw have
 # no logs at all and trigger the "no logs, old purchase date" branch) ---
 3
 
-# --- TEST 30: Warranty expiring alerts (Drill) ---
+# --- TEST 36: Warranty expiring alerts (Drill) ---
 4
 
 # Back to Main Menu
@@ -340,11 +383,11 @@ Y
 # ============================================================================
 6
 
-# --- TEST 31: Set overdue grace days ---
+# --- TEST 37: Set overdue grace days ---
 2
 5
 
-# --- TEST 32: Add user (admin only) ---
+# --- TEST 38: Add user (admin only) ---
 3
 Priya Chandra
 pchandra
@@ -352,7 +395,7 @@ TempPass456
 USER
 3
 
-# --- TEST 33: Delete user (admin only) — clean up the user just added ---
+# --- TEST 39: Delete user (admin only) — clean up the user just added ---
 4
 pchandra
 Y
