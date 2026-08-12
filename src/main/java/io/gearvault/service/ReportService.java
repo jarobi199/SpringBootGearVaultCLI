@@ -19,6 +19,8 @@ import io.github.kusoroadeolu.clique.configuration.TableType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -140,6 +142,25 @@ public class ReportService {
     }
 
     public void createOverdueReport() {
+        List<RentalAgreement> overdueRentals = rentalAgreementRepository.findByUserIdAndStatus(SessionContext.getUser().getId(), RentalStatus.ACTIVE)
+                .stream()
+                .filter(rentalAgreement -> rentalAgreement.getDueDate().isBefore(LocalDate.now().plusDays(SessionContext.getUser().getOverdueGraceDays()))).toList();
 
+        Table overdueRentalsTable = Clique.table(TableType.BOX_DRAW)
+                .headers(
+                        "[*blue, bold]EQUIPMENT NAME[/]",
+                        "[*blue, bold]EQUIPMENT BRAND[/]",
+                        "[*blue, bold]EQUIPMENT MODEL[/]",
+                        "[*blue, bold]CUSTOMER NAME[/]",
+                        "[*blue, bold]CUSTOMER PHONE[/]",
+                        "[*blue, bold]DUE DATE[/]",
+                        "[*blue, bold]DAYS OVERDUE[/]"
+                );
+        for(RentalAgreement  rentalAgreement : overdueRentals) {
+            long daysOverdue = ChronoUnit.DAYS.between(rentalAgreement.getDueDate(), LocalDate.now().plusDays(SessionContext.getUser().getOverdueGraceDays()));
+            overdueRentalsTable.row(rentalAgreement.getEquipmentName(), rentalAgreement.getEquipmentBrand(),
+                    rentalAgreement.getEquipmentModel(), rentalAgreement.getCustomerName(), rentalAgreement.getCustomerPhone(), rentalAgreement.getDueDate().toString(), String.valueOf(daysOverdue));
+        }
+        overdueRentalsTable.render();
     }
 }
